@@ -1,0 +1,21 @@
+{
+  "name": "astoreyai-productivity-skills",
+  "version": "1.0.0",
+  "description": "Productivity skills for Claude Code including memory-keeper for automated context management",
+  "author": {
+    "name": "Aaron Storey",
+    "email": "astoreyai@gmail.com",
+    "url": "https://github.com/astoreyai"
+  },
+  "homepage": "https://github.com/astoreyai/claude-skills",
+  "repository": "https://github.com/astoreyai/claude-skills",
+  "license": "MIT",
+  "keywords": [
+    "productivity",
+    "memory",
+    "context-management",
+    "automation",
+    "session-tracking",
+    "project-management"
+  ]
+}

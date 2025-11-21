@@ -1,0 +1,185 @@
+% Minimal Working Example: Beamer 16:9 with Overlays
+% Compile with: latexmk -pdf beamer_16_9_overlays.tex
+
+\documentclass[
+    aspectratio=169,           % 16:9 widescreen (use 43 for 4:3, 1610 for 16:10)
+    t,                         % Align frame content to top
+    11pt                       % Font size (10pt, 11pt, 12pt)
+]{beamer}
+
+% Theme selection
+\usetheme{Madrid}              % Professional theme
+\usecolortheme{default}
+
+% Optional: Disable navigation symbols
+\beamertemplatenavigationsymbolsempty
+
+% Optional: Add frame numbering
+\setbeamertemplate{footline}[frame number]
+
+% Metadata
+\title{Beamer Overlays and 16:9 Aspect Ratio}
+\subtitle{A Minimal Working Example}
+\author{Your Name}
+\institute{Your Institution}
+\date{\today}
+
+\begin{document}
+
+% Title frame
+\begin{frame}
+    \titlepage
+\end{frame}
+
+% Table of contents with overlays
+\begin{frame}{Outline}
+    \tableofcontents
+\end{frame}
+
+\section{Introduction}
+
+% Basic pause example
+\begin{frame}{Simple Pause Example}
+    This is the first line.
+    \pause
+
+    This appears after the first click.
+    \pause
+
+    This appears after the second click.
+\end{frame}
+
+% Itemize with overlay specifications
+\begin{frame}{Incremental Lists}
+    Key points to remember:
+    \begin{itemize}
+        \item<1-> First point appears immediately
+        \item<2-> Second point appears on click
+        \item<3-> Third point appears on second click
+        \item<4-> Fourth point appears on third click
+    \end{itemize}
+
+    \onslide<5->{
+        \textbf{Summary:} All points are now visible.
+    }
+\end{frame}
+
+\section{Overlay Commands}
+
+% Demonstrating different overlay commands
+\begin{frame}{Overlay Commands Comparison}
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \textbf{Using \textbackslash onslide:}
+            \begin{itemize}
+                \item<1-> Always reserves space
+                \item<2-> Content invisible but present
+                \item<3-> Layout stays consistent
+            \end{itemize}
+        \end{column}
+
+        \begin{column}{0.48\textwidth}
+            \textbf{Using \textbackslash only:}
+            \begin{itemize}
+                \item<1-> No space when hidden
+                \item<2-> Layout can shift
+                \item<3-> Useful for replacements
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+% Complex overlay example
+\begin{frame}{Complex Overlay Specifications}
+    \begin{block}{Block 1}
+        \onslide<1->{This block is always visible.}
+    \end{block}
+
+    \begin{alertblock}{Alert Block}<2->
+        This appears on slide 2 onwards.
+    \end{alertblock}
+
+    \begin{exampleblock}{Example Block}<3>
+        This appears only on slide 3 (not on 4+).
+    \end{exampleblock}
+
+    \onslide<4->{
+        \begin{block}{Final Block}
+            This appears on slide 4 onwards.
+        \end{block}
+    }
+\end{frame}
+
+\section{Best Practices}
+
+% Good overlay usage
+\begin{frame}{Best Practices for Overlays}
+    \textbf{Do:}
+    \begin{itemize}
+        \item<1-> Use overlays to guide audience focus
+        \item<2-> Keep overlay count ≤5 per frame
+        \item<3-> Use consistent reveal patterns
+        \item<4-> Test visibility at target screen size
+    \end{itemize}
+
+    \medskip
+
+    \onslide<5->{
+        \textbf{Don't:}
+        \begin{itemize}
+            \item Overuse overlays (cognitive overload)
+            \item Create layout shifts with \textbackslash only
+            \item Forget about handout mode
+        \end{itemize}
+    }
+\end{frame}
+
+% Accessibility considerations
+\begin{frame}{Accessibility Considerations}
+    \begin{block}{WCAG 2.1 Contrast Requirements}
+        \begin{itemize}
+            \item<1-> Normal text: ≥4.5:1 contrast ratio (AA)
+            \item<2-> Large text (≥18pt): ≥3:1 contrast ratio (AA)
+            \item<3-> Test with online contrast checkers
+        \end{itemize}
+    \end{block}
+
+    \onslide<4->{
+        \begin{alertblock}{Tip}
+            Avoid relying solely on color to convey information.
+            Use shapes, patterns, or labels in addition to color.
+        \end{alertblock}
+    }
+\end{frame}
+
+\section{Conclusion}
+
+% Final frame without overlays
+\begin{frame}{Summary}
+    \begin{itemize}
+        \item 16:9 aspect ratio: \texttt{aspectratio=169}
+        \item Use \texttt{<n->} for incremental reveals
+        \item Keep overlays ≤5 per frame
+        \item Test contrast for accessibility
+        \item Consider handout mode: \texttt{[handout]}
+    \end{itemize}
+
+    \bigskip
+
+    \centering
+    \Large Thank you for your attention!
+\end{frame}
+
+\end{document}
+
+% Compilation notes:
+% - Default compilation: latexmk -pdf beamer_16_9_overlays.tex
+% - Handout mode (no overlays): add [handout] to \documentclass options
+% - For notes: use \note{} and compile with \setbeameroption{show notes}
+
+% Overlay specification syntax reference:
+% <n>      : Only on slide n
+% <n->     : From slide n onwards
+% <-n>     : Up to slide n
+% <n-m>    : From slide n to m
+% <n,m,p>  : On slides n, m, and p

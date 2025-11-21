@@ -1,0 +1,215 @@
+# ChkTeX configuration for LaTeX projects
+# Place in project root as .chktexrc
+# Documentation: https://www.nongnu.org/chktex/ChkTeX.pdf
+
+##################################################
+# Output Configuration
+##################################################
+
+# Verbosity level (0-4)
+VerbosityLevel
+{
+    0
+}
+
+# Quote style (use quotes in output)
+QuoteStyle
+{
+    Traditional
+}
+
+##################################################
+# Warning Suppressions
+##################################################
+
+# Suppress specific warnings (uncomment to disable)
+
+# Warning 1: Command terminated with space
+# CmdSpaceWarning { }
+
+# Warning 2: Non-breaking space (~) should have been used
+# SpaceBefore { }
+
+# Warning 3: You should enclose the previous parenthesis with `{}'
+# Warning { 3 }
+
+# Warning 6: Number of `character' doesn't match the number of `}'
+# Warning { 6 }
+
+# Warning 8: Wrong length of dash may have been used
+# Warning { 8 }
+
+# Warning 10: White space before a punctuation mark
+# Warning { 10 }
+
+# Warning 11: You should use \\ldots instead of three dots
+# Warning { 11 }
+
+# Warning 12: You should use ``' for quotes
+# Warning { 12 }
+
+# Warning 13: Intersentence spacing (`\\@') should perhaps be used
+# Warning { 13 }
+
+# Warning 15: Use of ` instead of '
+# Warning { 15 }
+
+# Warning 17: Number of `(' doesn't match the number of `)'
+# Warning { 17 }
+
+# Warning 18: You should use either `` or '' as an alternative to `"'
+# Warning { 18 }
+
+# Warning 24: Delete this space to maintain correct pagereferences
+# Warning { 24 }
+
+# Warning 26: You should use \\cite or similar
+# Warning { 26 }
+
+# Warning 36: You should not use punctuation in front of quotes
+# Warning { 36 }
+
+# Warning 42: Discouraged use of `...' (LaTeX3 syntax)
+# Warning { 42 }
+
+##################################################
+# Enabled Warnings (Recommended)
+##################################################
+
+# These warnings are generally useful and should be addressed
+
+# Check spacing before references
+SpaceBefore
+{
+    (
+}
+
+# Check command spacing
+CmdSpaceWarning
+{
+    \\(
+}
+
+# Check math mode punctuation
+MathEnvir
+{
+    equation align gather multline
+}
+
+# Check for common typos
+TabSize
+{
+    4
+}
+
+##################################################
+# File Extensions
+##################################################
+
+# Extensions to check
+Extensions
+{
+    .tex .sty .cls .bib
+}
+
+##################################################
+# TeX-Specific Settings
+##################################################
+
+# Recognize these commands as user-defined
+UserWarnRegex
+{
+    # Add project-specific patterns here
+    # Example: SWAP \usepackage{#1} with \RequirePackage{#1}
+}
+
+# Silent on these commands
+Silent
+{
+    \\includegraphics
+    \\input
+    \\include
+}
+
+# Abbreviations that should not trigger intersentence spacing warnings
+Abbrev
+{
+    \\etal et al.
+    \\ie   i.e.
+    \\Ie   I.e.
+    \\eg   e.g.
+    \\Eg   E.g.
+    \\cf   cf.
+    \\Cf   Cf.
+    \\etc  etc.
+    \\vs   vs.
+    \\Fig  Fig.
+    \\fig  fig.
+    \\Tab  Tab.
+    \\tab  tab.
+    \\Sec  Sec.
+    \\sec  sec.
+    \\Dr   Dr.
+    \\Mr   Mr.
+    \\Mrs  Mrs.
+    \\Ms   Ms.
+    \\Prof Prof.
+}
+
+##################################################
+# Macro-Specific Rules
+##################################################
+
+# Don't warn about spacing after these macros
+MacroSpacing
+{
+    \\,
+    \\;
+    \\:
+    \\!
+}
+
+# Custom user-defined macros that take arguments
+# (helps ChkTeX parse correctly)
+UserMacros
+{
+    # Example: \\newcommand{\\todo}[1]{...}
+    # \\todo 1
+}
+
+##################################################
+# Bibliography Settings
+##################################################
+
+# Check citations
+CheckCitations
+{
+    1
+}
+
+##################################################
+# Per-File Suppressions
+##################################################
+
+# Use inline comments to suppress warnings:
+# % chktex 1
+# OR
+# % chktex-file 1
+
+##################################################
+# Project-Specific Customizations
+##################################################
+
+# Add project-specific suppressions below
+# Example: for TikZ-heavy documents, might suppress certain warnings
+
+# For Beamer presentations, suppress some overlay-related warnings
+# Warning { 10 }  # White space before punctuation (common in overlays)
+
+##################################################
+# Notes
+##################################################
+
+# To see all available warnings: chktex -v0 -l <file>
+# To suppress a warning in a specific file: add "% chktex-file <number>" at top
+# To suppress for one line: add "% chktex <number>" on that line

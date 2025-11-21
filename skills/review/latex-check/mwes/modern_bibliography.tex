@@ -1,0 +1,231 @@
+% Minimal Working Example: Modern Bibliography with biblatex + biber
+% Compile with: latexmk -pdf modern_bibliography.tex
+% (latexmk handles the pdflatex -> biber -> pdflatex sequence automatically)
+
+\documentclass[12pt]{article}
+
+% Modern LaTeX encoding
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+% Modern bibliography with biblatex + biber
+\usepackage[
+    backend=biber,              % Use biber (not bibtex)
+    style=authoryear,           % Citation style (authoryear, numeric, apa, ieee, etc.)
+    sorting=nyt,                % Sort by name, year, title
+    citestyle=authoryear,       % In-text citation format
+    bibstyle=authoryear,        % Bibliography format
+    maxbibnames=99,             % Show all authors in bibliography
+    maxcitenames=2,             % "et al." after 2 authors in citations
+    giveninits=true,            % Use initials for first names
+    uniquename=init,            % Disambiguate by initials
+    uniquelist=true,            % Disambiguate by showing more authors
+    doi=true,                   % Include DOIs
+    isbn=false,                 % Hide ISBNs
+    url=true,                   % Include URLs
+    eprint=false                % Hide arXiv eprints (set true if needed)
+]{biblatex}
+
+% Quotes package (load before biblatex for best integration)
+\usepackage{csquotes}
+
+% Add bibliography file
+\addbibresource{references.bib}
+
+% Hyperlinks (load near end, before cleveref)
+\usepackage[
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue,
+    pdftitle={Modern Bibliography Example},
+    pdfauthor={Your Name}
+]{hyperref}
+
+% Smart cross-references (load after hyperref)
+\usepackage{cleveref}
+
+\title{Modern Bibliography with biblatex and biber}
+\author{Your Name}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+This document demonstrates modern bibliography management using
+\texttt{biblatex} with the \texttt{biber} backend \parencite{latex2e}.
+This approach offers superior Unicode support, flexible formatting,
+and better handling of complex citation requirements.
+
+\section{Citation Examples}
+
+\subsection{Basic Citations}
+
+Single citation: \textcite{knuth1984texbook} created \TeX{}.
+
+Parenthetical citation: LaTeX is widely used \parencite{lamport1994latex}.
+
+Multiple citations: Many excellent resources exist
+\parencite{knuth1984texbook,lamport1994latex,mittelbach2004latex}.
+
+\subsection{Advanced Citations}
+
+With prenote and postnote: \parencite[see][Chapter 3]{lamport1994latex}
+
+Text citation: As \textcite{knuth1984texbook} explains, typography matters.
+
+Year only: Knuth \parencite*{knuth1984texbook} revolutionized typesetting.
+
+\subsection{Multiple Authors}
+
+The \texttt{maxcitenames=2} setting automatically uses ``et al.'' for
+citations with more than 2 authors \parencite{mittelbach2004latex}.
+
+\section{Bibliography Toolchain}
+
+\subsection{Compilation Sequence}
+
+The complete compilation sequence is:
+
+\begin{enumerate}
+    \item \texttt{pdflatex document.tex} — First pass, generates \texttt{.aux} and \texttt{.bcf}
+    \item \texttt{biber document} — Processes bibliography, generates \texttt{.bbl}
+    \item \texttt{pdflatex document.tex} — Second pass, includes citations
+    \item \texttt{pdflatex document.tex} — Third pass, resolves all references
+\end{enumerate}
+
+\subsection{Using latexmk}
+
+The \texttt{latexmk} tool automates this process:
+
+\begin{verbatim}
+latexmk -pdf document.tex
+\end{verbatim}
+
+It automatically detects when \texttt{biber} needs to run and handles
+all passes correctly.
+
+\section{Bibliography Styles}
+
+Common \texttt{biblatex} styles:
+
+\begin{itemize}
+    \item \textbf{numeric}: Numbered citations [1], [2]
+    \item \textbf{authoryear}: (Author Year) citations
+    \item \textbf{alphabetic}: [Knu84], [Lam94] style
+    \item \textbf{apa}: APA style (American Psychological Association)
+    \item \textbf{ieee}: IEEE style for engineering
+    \item \textbf{chicago}: Chicago Manual of Style
+\end{itemize}
+
+Change style by modifying \texttt{\textbackslash usepackage[style=...]\{biblatex\}}.
+
+\section{Creating the .bib File}
+
+Create \texttt{references.bib} with entries like:
+
+\begin{verbatim}
+@book{knuth1984texbook,
+    author = {Knuth, Donald E.},
+    title = {The TeXbook},
+    year = {1984},
+    publisher = {Addison-Wesley},
+    address = {Reading, MA}
+}
+\end{verbatim}
+
+Export from reference managers (Zotero, Mendeley, JabRef) or
+use Google Scholar's ``Cite → BibTeX'' feature.
+
+\section{Troubleshooting}
+
+\subsection{Common Issues}
+
+\textbf{Issue:} Citations show as \textbf{[?]} or \textbf{(?)}.
+\newline
+\textbf{Solution:} Run full compilation sequence (or use \texttt{latexmk}).
+
+\textbf{Issue:} ``Package biblatex Warning: Please (re)run Biber''.
+\newline
+\textbf{Solution:} Run \texttt{biber document} then recompile.
+
+\textbf{Issue:} Biber errors about Unicode.
+\newline
+\textbf{Solution:} Ensure \texttt{.bib} file is UTF-8 encoded.
+
+\subsection{Checking Backend}
+
+Verify biber backend in the \texttt{.bcf} file or compilation log:
+
+\begin{verbatim}
+Package biblatex Info: Trying to load bibliographic
+    data in engine format 'biber'.
+\end{verbatim}
+
+\section{Advantages of biblatex + biber}
+
+\begin{itemize}
+    \item Native UTF-8 support (Unicode characters in names, titles)
+    \item Flexible formatting without manual \texttt{.bst} hacking
+    \item Better sorting (handles diacritics, non-Latin scripts)
+    \item Custom citation commands (\texttt{\textbackslash parencite}, \texttt{\textbackslash textcite})
+    \item Advanced filtering and subdivision of bibliographies
+    \item Active development and maintenance
+\end{itemize}
+
+\section{Conclusion}
+
+Modern LaTeX documents should use \texttt{biblatex} with \texttt{biber}
+for bibliography management. This combination provides superior
+functionality and is now the recommended standard
+\parencite{latex2e,mittelbach2004latex}.
+
+% Print bibliography
+\printbibliography
+
+\end{document}
+
+% ====================================================================
+% Create references.bib file with the following content:
+% ====================================================================
+%
+% @book{knuth1984texbook,
+%     author = {Knuth, Donald E.},
+%     title = {The {{\TeX}}book},
+%     year = {1984},
+%     publisher = {Addison-Wesley},
+%     address = {Reading, MA},
+%     edition = {1st}
+% }
+%
+% @book{lamport1994latex,
+%     author = {Lamport, Leslie},
+%     title = {{{\LaTeX}}: A Document Preparation System},
+%     year = {1994},
+%     publisher = {Addison-Wesley},
+%     address = {Reading, MA},
+%     edition = {2nd}
+% }
+%
+% @book{mittelbach2004latex,
+%     author = {Mittelbach, Frank and Goossens, Michel and Braams, Johannes
+%               and Carlisle, David and Rowley, Chris},
+%     title = {The {{\LaTeX}} Companion},
+%     year = {2004},
+%     publisher = {Addison-Wesley},
+%     address = {Reading, MA},
+%     edition = {2nd}
+% }
+%
+% @manual{latex2e,
+%     title = {{{\LaTeX}}2e: An unofficial reference manual},
+%     author = {{LaTeX Project Team}},
+%     year = {2023},
+%     url = {https://latexref.xyz/},
+%     urldate = {2024-01-01}
+% }
+%
+% ====================================================================

@@ -1,0 +1,317 @@
+# LaTeX/TikZ/Beamer Audit Checklist
+# Comprehensive rules grounded in official manuals and best practices
+
+document:
+  - id: class_detect
+    rule: "Detect document class (article, report, book, beamer, IEEEtran, ACM, etc.) and extract class options."
+    severity: info
+    ref: "LaTeX Project documentation"
+    action: "Verify class choice matches intended output format."
+
+  - id: engine_detect
+    rule: "Identify LaTeX engine (pdfLaTeX, XeLaTeX, LuaLaTeX) from file directives or package requirements."
+    severity: info
+    ref: "LaTeX Project documentation"
+    action: "Recommend latexmk with appropriate flags: -pdf (pdfLaTeX), -xelatex, -lualatex."
+
+  - id: encoding_check
+    rule: "For pdfLaTeX, verify \\usepackage[utf8]{inputenc} and \\usepackage[T1]{fontenc}."
+    severity: warn
+    ref: "LaTeX font encoding documentation"
+    action: "Add inputenc/fontenc or switch to Unicode engines (XeLaTeX/LuaLaTeX)."
+
+packages:
+  - id: hyperref_order
+    rule: "Load hyperref near end of preamble (after most packages, before cleveref)."
+    severity: warn
+    ref: "hyperref manual (CTAN)"
+    action: "Move \\usepackage{hyperref} to late preamble; set PDF metadata with \\hypersetup{}."
+    evidence_pattern: "\\\\usepackage.*\\{hyperref\\}"
+
+  - id: hyperref_metadata
+    rule: "Set PDF metadata using \\hypersetup{pdftitle, pdfauthor, pdfsubject, pdfkeywords}."
+    severity: info
+    ref: "hyperref manual"
+    action: "Add \\hypersetup{pdftitle={...}, pdfauthor={...}} after hyperref."
+
+  - id: cleveref_present
+    rule: "If cross-references used, prefer cleveref for type-aware references (\\cref, \\Cref)."
+    severity: info
+    ref: "cleveref manual (CTAN)"
+    action: "Add \\usepackage{cleveref} after hyperref; use \\cref{} instead of \\ref{}."
+    evidence_pattern: "\\\\ref\\{|\\\\label\\{"
+
+  - id: cleveref_order
+    rule: "Load cleveref last (after hyperref, after anything that defines float types)."
+    severity: warn
+    ref: "cleveref manual"
+    action: "Move \\usepackage{cleveref} to very end of preamble."
+
+  - id: bib_backend
+    rule: "Prefer biblatex with biber backend for modern bibliography management."
+    severity: info
+    ref: "biblatex manual (CTAN)"
+    action: "Use \\usepackage[backend=biber,style=...]{biblatex} and compile with biber."
+    evidence_pattern: "\\\\bibliography\\{|\\\\bibitem|\\\\usepackage.*\\{biblatex\\}"
+
+  - id: bib_toolchain
+    rule: "Verify bibliography toolchain: pdflatex -> biber -> pdflatex -> pdflatex."
+    severity: warn
+    ref: "biblatex manual"
+    action: "Use latexmk for automatic multi-pass compilation: latexmk -pdf."
+
+  - id: microtype_enabled
+    rule: "Enable microtype for character protrusion and font expansion (pdfTeX/LuaTeX/XeTeX)."
+    severity: info
+    ref: "microtype manual (CTAN)"
+    action: "Add \\usepackage{microtype} after font packages for improved typography."
+
+  - id: csquotes_present
+    rule: "Use csquotes with babel/polyglossia for locale-aware quotations."
+    severity: info
+    ref: "csquotes manual (CTAN)"
+    action: "Add \\usepackage{csquotes} and use \\enquote{} for quotes."
+    evidence_pattern: "``|''|\\\"\\{|\\\"\\}"
+
+  - id: babel_polyglossia
+    rule: "Load babel (pdfLaTeX) or polyglossia (XeLaTeX/LuaLaTeX) for language support."
+    severity: warn
+    ref: "babel/polyglossia manuals"
+    action: "Add \\usepackage[language]{babel} or \\usepackage{polyglossia}."
+
+  - id: graphicx_present
+    rule: "Load graphicx for image inclusion (\\includegraphics)."
+    severity: warn
+    ref: "graphicx manual"
+    action: "Add \\usepackage{graphicx} if images are used."
+    evidence_pattern: "\\\\includegraphics"
+
+  - id: amsmath_present
+    rule: "Load amsmath for enhanced math environments (align, equation, etc.)."
+    severity: warn
+    ref: "amsmath manual (AMS)"
+    action: "Add \\usepackage{amsmath} before other math packages."
+    evidence_pattern: "\\\\begin\\{(align|equation|gather|multline)"
+
+tikz:
+  - id: tikz_present
+    rule: "Detect TikZ usage via \\usepackage{tikz} and \\begin{tikzpicture}."
+    severity: info
+    ref: "TikZ & PGF manual (TikZ.dev)"
+    action: "Ensure tikz package loaded; load required libraries with \\usetikzlibrary{}."
+    evidence_pattern: "\\\\begin\\{tikzpicture\\}|\\\\tikz"
+
+  - id: tikz_libraries
+    rule: "Verify TikZ libraries are explicitly loaded (positioning, arrows.meta, shapes, etc.)."
+    severity: warn
+    ref: "TikZ manual Part III: Libraries"
+    action: "Add \\usetikzlibrary{...} for features like positioning, arrows.meta."
+
+  - id: pgfplots_present
+    rule: "Detect pgfplots usage for data plotting."
+    severity: info
+    ref: "pgfplots manual (CTAN)"
+    action: "Load pgfplots: \\usepackage{pgfplots} and set compat level."
+    evidence_pattern: "\\\\begin\\{axis\\}|\\\\addplot"
+
+  - id: pgfplots_compat
+    rule: "Set pgfplots compatibility level: \\pgfplotsset{compat=1.18} or newest."
+    severity: warn
+    ref: "pgfplots manual Section 2.6"
+    action: "Add \\pgfplotsset{compat=newest} or specific version after \\usepackage{pgfplots}."
+
+  - id: pgfplots_data_files
+    rule: "For large datasets, use external data files with \\addplot table{data.dat}."
+    severity: info
+    ref: "pgfplots manual Section 4.2"
+    action: "Separate plot data into .dat files; use \\addplot table[...]{file.dat}."
+
+  - id: tikz_compile_cost
+    rule: "If many TikZ figures or pgfplots, compilation time may be high."
+    severity: info
+    ref: "TikZ external library documentation"
+    action: "Consider externalization to compile figures once and cache."
+
+  - id: externalize_detection
+    rule: "Detect externalization via \\usetikzlibrary{external} and \\tikzexternalize."
+    severity: info
+    ref: "TikZ external library (TikZ.dev)"
+    action: "If externalizing, ensure -shell-escape flag and proper cache directory."
+    evidence_pattern: "\\\\usetikzlibrary\\{.*external.*\\}|\\\\tikzexternalize"
+
+  - id: externalize_shell_escape
+    rule: "Externalization requires -shell-escape; document security implications."
+    severity: warn
+    ref: "TikZ external library; TeX FAQ on shell-escape"
+    action: "Compile with: latexmk -pdf -shell-escape. Warn about untrusted TeX files."
+
+  - id: externalize_prefix
+    rule: "Set externalization prefix to organize cache: \\tikzexternalize[prefix=tikz-cache/]."
+    severity: info
+    ref: "TikZ external library"
+    action: "Use \\tikzexternalize[prefix=tikz-cache/, figure name=fig-] for organization."
+
+  - id: tikz_naming
+    rule: "Use \\tikzsetnextfilename{name} before tikzpictures for reproducible cache names."
+    severity: info
+    ref: "TikZ external library"
+    action: "Add \\tikzsetnextfilename{descriptive-name} before each \\begin{tikzpicture}."
+
+beamer:
+  - id: beamer_class
+    rule: "Detect Beamer class: \\documentclass[options]{beamer}."
+    severity: info
+    ref: "Beamer user guide (CTAN)"
+    action: "Verify beamer class; check options for aspectratio, theme, etc."
+    evidence_pattern: "\\\\documentclass.*\\{beamer\\}"
+
+  - id: aspect_ratio
+    rule: "Check aspectratio option (default 4:3, 169 for 16:9, 1610 for 16:10)."
+    severity: warn
+    ref: "Beamer user guide Section 8.3"
+    action: "Set \\documentclass[aspectratio=169]{beamer} for modern widescreen."
+
+  - id: beamer_theme
+    rule: "Verify theme consistency (\\usetheme{...}) and color/font themes."
+    severity: info
+    ref: "Beamer user guide Part II: Themes"
+    action: "Choose coherent theme (Madrid, Berkeley, etc.) or custom theme."
+
+  - id: frame_title
+    rule: "Ensure all frames have titles via \\frametitle{} or \\begin{frame}{Title}."
+    severity: info
+    ref: "Beamer user guide Section 8.1"
+    action: "Add descriptive frame titles for structure and accessibility."
+
+  - id: overlay_detection
+    rule: "Detect overlay specifications: \\pause, <n->, \\onslide<>, \\only<>."
+    severity: info
+    ref: "Beamer user guide Section 9"
+    action: "Document overlay usage; ensure consistent and not excessive."
+    evidence_pattern: "\\\\pause|<[0-9]+(-|,|->)?.*?>|\\\\onslide|\\\\only<"
+
+  - id: overlay_density
+    rule: "Flag frames with >5 overlay steps; may indicate over-complexity."
+    severity: warn
+    ref: "Beamer overlays best practices (TUGboat)"
+    action: "Consolidate overlays or split frame; aim for ≤5 steps per frame."
+
+  - id: frame_content_balance
+    rule: "Check for overcrowded frames (>20 lines of content per frame)."
+    severity: warn
+    ref: "Presentation design best practices"
+    action: "Split content across multiple frames; use itemize with <n-> for phased reveal."
+
+  - id: navigation_symbols
+    rule: "Consider disabling navigation symbols: \\beamertemplatenavigationsymbolsempty."
+    severity: info
+    ref: "Beamer user guide Section 8.2.3"
+    action: "Add to preamble if navigation symbols are unwanted."
+
+  - id: contrast_check
+    rule: "Flag potential contrast issues (dark text on dark background, etc.)."
+    severity: warn
+    ref: "WCAG 2.1 Success Criterion 1.4.3 (Contrast Minimum)"
+    action: "Ensure ≥4.5:1 contrast for normal text, ≥3:1 for large text (AA compliance)."
+
+  - id: font_size_check
+    rule: "Verify default font size is legible (Beamer default 11pt often sufficient)."
+    severity: info
+    ref: "Beamer user guide Section 8.3"
+    action: "Test slides at target display size; consider larger fonts for large venues."
+
+  - id: handout_mode
+    rule: "Check if handout mode defined: \\documentclass[handout]{beamer}."
+    severity: info
+    ref: "Beamer user guide Section 21"
+    action: "Use handout mode to collapse overlays for printing."
+
+cross_references:
+  - id: label_prefix
+    rule: "Use consistent label prefixes: fig:, tab:, sec:, eq:, etc."
+    severity: info
+    ref: "LaTeX best practices"
+    action: "Adopt naming convention: \\label{fig:myimage}, \\label{eq:main}."
+
+  - id: varioref_check
+    rule: "Consider varioref for smart page references (\\vref)."
+    severity: info
+    ref: "varioref package documentation"
+    action: "Add \\usepackage{varioref} before hyperref for context-aware refs."
+
+floats:
+  - id: float_placement
+    rule: "Avoid forced placement [H]; prefer [htbp] or float package with [H] option."
+    severity: warn
+    ref: "LaTeX float placement documentation"
+    action: "Use [htbp] for flexible placement; load float package if [H] needed."
+
+  - id: caption_package
+    rule: "Use caption package for customizable captions."
+    severity: info
+    ref: "caption package documentation (CTAN)"
+    action: "Add \\usepackage{caption} for caption formatting control."
+
+math:
+  - id: equation_numbering
+    rule: "Use equation (numbered) vs. equation* (unnumbered) consistently."
+    severity: info
+    ref: "amsmath documentation"
+    action: "Number important equations; use \\notag in align for selective numbering."
+
+  - id: math_operators
+    rule: "Define custom operators with \\DeclareMathOperator."
+    severity: info
+    ref: "amsmath documentation"
+    action: "Use \\DeclareMathOperator{\\name}{text} for proper operator spacing."
+
+lint:
+  - id: chktex
+    rule: "Run chktex for semantic LaTeX linting (spacing, punctuation, warnings)."
+    severity: info
+    ref: "ChkTeX manual (Savannah)"
+    action: "Configure .chktexrc and run: chktex -v0 document.tex."
+
+  - id: latexindent
+    rule: "Use latexindent for consistent code formatting."
+    severity: info
+    ref: "latexindent documentation (latex.us)"
+    action: "Create indentconfig.yaml and run: latexindent -w document.tex."
+
+  - id: lacheck
+    rule: "Consider lacheck for additional basic error checking."
+    severity: info
+    ref: "lacheck man page"
+    action: "Run: lacheck document.tex for simple syntax checks."
+
+compilation:
+  - id: latexmk_usage
+    rule: "Prefer latexmk for automated multi-pass compilation."
+    severity: info
+    ref: "latexmk manual (CTAN)"
+    action: "Use: latexmk -pdf -interaction=nonstopmode document.tex."
+
+  - id: shell_escape_security
+    rule: "Use -shell-escape only when necessary (externalization, minted, etc.)."
+    severity: warn
+    ref: "TeX FAQ on restricted shell escape"
+    action: "Enable only for trusted documents; understand security implications."
+
+  - id: continuous_compilation
+    rule: "Use latexmk -pvc for continuous preview mode during editing."
+    severity: info
+    ref: "latexmk manual"
+    action: "Run: latexmk -pdf -pvc document.tex for auto-recompilation on save."
+
+accessibility:
+  - id: alt_text
+    rule: "Provide alternative text for figures when possible."
+    severity: info
+    ref: "accessibility guidelines for LaTeX"
+    action: "Consider PDF/UA compliance; use descriptive captions."
+
+  - id: color_reliance
+    rule: "Don't rely solely on color for conveying information."
+    severity: warn
+    ref: "WCAG 2.1 SC 1.4.1 (Use of Color)"
+    action: "Use patterns, shapes, or labels in addition to color in plots."

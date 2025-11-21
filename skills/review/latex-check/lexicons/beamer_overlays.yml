@@ -1,0 +1,157 @@
+# Beamer Overlay Patterns and Heuristics
+# Used by latex-check skill for Beamer presentation analysis
+
+overlays:
+  # Patterns for detecting overlay specifications
+  patterns:
+    - "\\\\pause"
+    - "<[0-9]+(-|,|->)?.*?>"
+    - "\\\\onslide<[^>]+>"
+    - "\\\\only<[^>]+>"
+    - "\\\\uncover<[^>]+>"
+    - "\\\\visible<[^>]+>"
+    - "\\\\invisible<[^>]+>"
+    - "\\\\alt<[^>]+>"
+    - "\\\\temporal<[^>]+>"
+
+  # Heuristics for overlay analysis
+  heuristics:
+    max_overlays_per_frame: 5
+    suggest_consolidation: true
+    warn_threshold: 6
+
+  # Common overlay commands and their purposes
+  commands:
+    pause:
+      syntax: "\\pause"
+      description: "Pauses presentation; reveals next item on click"
+      use_case: "Simple sequential reveals"
+
+    onslide:
+      syntax: "\\onslide<spec>{content}"
+      description: "Shows content on specified slides; reserves space when hidden"
+      use_case: "Phased content reveal with layout preservation"
+
+    only:
+      syntax: "\\only<spec>{content}"
+      description: "Shows content only on specified slides; no space when hidden"
+      use_case: "Replacing content across slides"
+
+    uncover:
+      syntax: "\\uncover<spec>{content}"
+      description: "Uncovers content on specified slides (covered but present before)"
+      use_case: "Gradual content revelation"
+
+    visible:
+      syntax: "\\visible<spec>{content}"
+      description: "Makes content visible on specified slides; invisible otherwise"
+      use_case: "Similar to onslide but slightly different spacing"
+
+    invisible:
+      syntax: "\\invisible<spec>{content}"
+      description: "Makes content invisible on specified slides"
+      use_case: "Hiding specific elements temporarily"
+
+    item_spec:
+      syntax: "\\item<spec> text"
+      description: "Itemize/enumerate with overlay specification"
+      use_case: "Sequential list reveals"
+      example: "\\item<1-> First \\item<2-> Second"
+
+  # Overlay specification syntax
+  specifications:
+    single:
+      pattern: "<n>"
+      description: "Show only on slide n"
+      example: "<3>"
+
+    range:
+      pattern: "<n-m>"
+      description: "Show from slide n to m"
+      example: "<2-4>"
+
+    open_ended:
+      pattern: "<n->"
+      description: "Show from slide n onwards"
+      example: "<2->"
+
+    up_to:
+      pattern: "<-m>"
+      description: "Show up to slide m"
+      example: "<-3>"
+
+    multiple:
+      pattern: "<n,m,p>"
+      description: "Show on slides n, m, and p"
+      example: "<1,3,5>"
+
+    complex:
+      pattern: "<n-m,p,q->"
+      description: "Complex combinations"
+      example: "<1-2,4,6->"
+
+# Aspect ratios and their numeric codes
+aspect_ratios:
+  "43": "4:3 (traditional, default)"
+  "169": "16:9 (widescreen)"
+  "1610": "16:10"
+  "149": "14:9"
+  "54": "5:4"
+  "32": "3:2"
+
+# Contrast guidelines (WCAG 2.1)
+contrast:
+  aa_normal_text:
+    ratio: "4.5:1"
+    applies_to: "Text smaller than 18pt (or 14pt bold)"
+
+  aa_large_text:
+    ratio: "3:1"
+    applies_to: "Text 18pt+ (or 14pt+ bold)"
+
+  aaa_normal_text:
+    ratio: "7:1"
+    applies_to: "Text smaller than 18pt (for AAA compliance)"
+
+  aaa_large_text:
+    ratio: "4.5:1"
+    applies_to: "Text 18pt+ (for AAA compliance)"
+
+# Common theme recommendations
+themes:
+  classic:
+    - "default"
+    - "classic"
+
+  professional:
+    - "Madrid"
+    - "Berlin"
+    - "Copenhagen"
+    - "Malmoe"
+
+  modern:
+    - "metropolis (via \\usetheme{metropolis})"
+    - "Frankfurt"
+    - "Singapore"
+
+  minimal:
+    - "Rochester (no navigation)"
+    - "Boadilla"
+
+# Frame content guidelines
+frame_content:
+  max_lines_text: 20
+  max_bullet_points: 7
+  recommended_bullet_points: 5
+  min_font_size_pt: 10
+  recommended_font_size_pt: 11
+
+# Navigation options
+navigation:
+  disable_symbols: "\\beamertemplatenavigationsymbolsempty"
+  minimal: "\\setbeamertemplate{navigation symbols}{}"
+
+# Overlay performance notes
+performance:
+  note: "Each overlay creates additional PDF pages; excessive overlays increase file size"
+  recommendation: "Use overlays judiciously; consider handout mode for printing"

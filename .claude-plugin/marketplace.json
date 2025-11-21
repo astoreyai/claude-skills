@@ -1,0 +1,55 @@
+{
+  "name": "astoreyai-productivity",
+  "owner": {
+    "name": "Aaron Storey",
+    "email": "astoreyai@gmail.com"
+  },
+  "description": "Professional productivity tools and skills for Claude Code users",
+  "version": "1.0.0",
+  "plugins": [
+    {
+      "name": "astoreyai-productivity-skills",
+      "description": "Productivity skills including memory-keeper for automated context management, session tracking, and project status updates",
+      "version": "1.0.0",
+      "source": "./",
+      "strict": false,
+      "author": {
+        "name": "Aaron Storey",
+        "email": "astoreyai@gmail.com",
+        "url": "https://github.com/astoreyai"
+      },
+      "homepage": "https://github.com/astoreyai/claude-skills",
+      "repository": "https://github.com/astoreyai/claude-skills",
+      "license": "MIT",
+      "keywords": [
+        "productivity",
+        "memory",
+        "context-management",
+        "automation",
+        "session-tracking",
+        "project-management"
+      ],
+      "category": "productivity",
+      "skills": [
+        "./skills/memory-keeper"
+      ],
+      "commands": [
+        "./commands/update-memory.md"
+      ],
+      "hooks": {
+        "SessionEnd": [
+          {
+            "matcher": "*",
+            "hooks": [
+              {
+                "type": "command",
+                "command": "python3 ${PLUGIN_DIR}/skills/memory-keeper/auto_update.py",
+                "timeout": 30
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

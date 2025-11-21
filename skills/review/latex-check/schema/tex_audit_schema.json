@@ -1,0 +1,350 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TexAudit",
+  "description": "Schema for LaTeX/TikZ/Beamer audit results",
+  "type": "object",
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "audit_date": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the audit was performed"
+        },
+        "skill_version": {
+          "type": "string",
+          "description": "Version of latex-check skill used"
+        },
+        "file_path": {
+          "type": "string",
+          "description": "Path to audited LaTeX file"
+        }
+      }
+    },
+    "document": {
+      "type": "object",
+      "properties": {
+        "doc_class": {
+          "type": "string",
+          "description": "Document class (article, beamer, etc.)"
+        },
+        "class_options": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Class options detected"
+        },
+        "engine": {
+          "type": "string",
+          "enum": ["pdflatex", "xelatex", "lualatex", "unknown"],
+          "description": "Detected or recommended LaTeX engine"
+        },
+        "encoding": {
+          "type": "string",
+          "description": "Input encoding (utf8, latin1, etc.)"
+        }
+      },
+      "required": ["doc_class"]
+    },
+    "packages": {
+      "type": "object",
+      "properties": {
+        "loaded": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of packages detected"
+        },
+        "recommended": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              },
+              "priority": {
+                "type": "string",
+                "enum": ["required", "recommended", "optional"]
+              }
+            }
+          }
+        },
+        "order_issues": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "package": {
+                "type": "string"
+              },
+              "issue": {
+                "type": "string"
+              },
+              "fix": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "tikz": {
+      "type": "object",
+      "properties": {
+        "present": {
+          "type": "boolean"
+        },
+        "libraries": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "externalization": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "prefix": {
+              "type": "string"
+            },
+            "requires_shell_escape": {
+              "type": "boolean"
+            },
+            "cache_directory": {
+              "type": "string"
+            }
+          }
+        },
+        "pgfplots": {
+          "type": "object",
+          "properties": {
+            "present": {
+              "type": "boolean"
+            },
+            "compat_level": {
+              "type": "string"
+            },
+            "data_files_used": {
+              "type": "boolean"
+            }
+          }
+        },
+        "figure_count": {
+          "type": "integer",
+          "description": "Number of TikZ figures detected"
+        },
+        "compile_cost_estimate": {
+          "type": "string",
+          "enum": ["low", "medium", "high", "very_high"],
+          "description": "Estimated compilation time impact"
+        }
+      }
+    },
+    "beamer": {
+      "type": "object",
+      "properties": {
+        "is_beamer": {
+          "type": "boolean"
+        },
+        "aspect_ratio": {
+          "type": "string",
+          "description": "Aspect ratio code (43, 169, 1610, etc.)"
+        },
+        "theme": {
+          "type": "string"
+        },
+        "color_theme": {
+          "type": "string"
+        },
+        "font_theme": {
+          "type": "string"
+        },
+        "frame_count": {
+          "type": "integer"
+        },
+        "overlay_analysis": {
+          "type": "object",
+          "properties": {
+            "total_overlays": {
+              "type": "integer"
+            },
+            "max_overlays_per_frame": {
+              "type": "integer"
+            },
+            "frames_exceeding_threshold": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "frame_title": {
+                    "type": "string"
+                  },
+                  "overlay_count": {
+                    "type": "integer"
+                  },
+                  "line_number": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "contrast_issues": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "location": {
+                "type": "string"
+              },
+              "issue": {
+                "type": "string"
+              },
+              "estimated_ratio": {
+                "type": "string"
+              },
+              "wcag_level": {
+                "type": "string",
+                "enum": ["pass_aa", "pass_aaa", "fail"]
+              }
+            }
+          }
+        }
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique finding identifier from checklist"
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["info", "warn", "error"],
+            "description": "Severity level"
+          },
+          "section": {
+            "type": "string",
+            "enum": ["document", "packages", "cross_references", "bibliography", "tikz", "beamer", "floats", "math", "lint", "compilation", "accessibility"],
+            "description": "Category of finding"
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable finding description"
+          },
+          "evidence": {
+            "type": "string",
+            "description": "Code snippet or line reference showing the issue"
+          },
+          "reference": {
+            "type": "string",
+            "description": "Manual or documentation reference"
+          },
+          "fix": {
+            "type": "string",
+            "description": "Recommended fix"
+          },
+          "line_number": {
+            "type": "integer",
+            "description": "Line number where issue occurs"
+          },
+          "mwe_path": {
+            "type": "string",
+            "description": "Path to minimal working example for this fix"
+          }
+        },
+        "required": ["id", "severity", "section", "message"]
+      }
+    },
+    "compilation": {
+      "type": "object",
+      "properties": {
+        "command": {
+          "type": "string",
+          "description": "Recommended compilation command"
+        },
+        "requires_shell_escape": {
+          "type": "boolean"
+        },
+        "multi_pass_required": {
+          "type": "boolean",
+          "description": "Whether multiple compilation passes needed"
+        },
+        "toolchain": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Complete toolchain sequence (pdflatex, biber, etc.)"
+        },
+        "estimated_time": {
+          "type": "string",
+          "enum": ["fast", "moderate", "slow", "very_slow"],
+          "description": "Estimated compilation time"
+        }
+      }
+    },
+    "mwe_paths": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Paths to generated minimal working examples"
+    },
+    "lint_configs": {
+      "type": "object",
+      "properties": {
+        "chktexrc_path": {
+          "type": "string"
+        },
+        "indentconfig_path": {
+          "type": "string"
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "properties": {
+        "total_findings": {
+          "type": "integer"
+        },
+        "by_severity": {
+          "type": "object",
+          "properties": {
+            "info": {
+              "type": "integer"
+            },
+            "warn": {
+              "type": "integer"
+            },
+            "error": {
+              "type": "integer"
+            }
+          }
+        },
+        "overall_status": {
+          "type": "string",
+          "enum": ["excellent", "good", "needs_improvement", "critical_issues"],
+          "description": "Overall document health"
+        },
+        "recommendations_count": {
+          "type": "integer"
+        }
+      }
+    }
+  },
+  "required": ["document", "findings", "summary"]
+}

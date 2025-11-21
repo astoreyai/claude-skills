@@ -1,0 +1,211 @@
+# latexindent configuration for LaTeX projects
+# Place in project root or use with: latexindent -l=indentconfig.yaml myfile.tex
+# Documentation: https://latex.us/support/latexindent/documentation/latexindent.pdf
+
+# Default indent character and amount
+defaultIndent: "    "  # 4 spaces (change to "\t" for tabs)
+
+# Indentation rules for environments
+indentRules:
+    document: 1
+    abstract: 1
+    itemize: 1
+    enumerate: 1
+    description: 1
+    figure: 1
+    table: 1
+    equation: 1
+    align: 1
+    gather: 1
+    multline: 1
+    split: 1
+    cases: 1
+    tikzpicture: 1
+    axis: 1
+    frame: 1  # Beamer frames
+    block: 1  # Beamer blocks
+    columns: 1  # Beamer columns
+    column: 1
+
+# Commands that should be indented
+indentAfterItems:
+    itemize: 1
+    enumerate: 1
+    description: 1
+    list: 1
+
+# Items to indent after
+itemNames:
+    item: 1
+    bibitem: 1
+
+# Special indentation rules
+specialBeginEnd:
+    displayMath: 1
+    inlineMath: 0
+    verbatim: 0
+    lstlisting: 0
+    minted: 0
+
+# Beamer-specific
+beamer:
+    frame: 1
+    block: 1
+    alertblock: 1
+    exampleblock: 1
+    columns: 1
+    column: 1
+
+# TikZ-specific
+tikz:
+    tikzpicture: 1
+    scope: 1
+    node: 0
+    draw: 0
+    fill: 0
+    path: 0
+
+# Indent preamble commands
+indentPreamble: 0  # Don't indent \usepackage, \newcommand, etc.
+
+# Alignment rules
+lookForAlignDelims:
+    tabular: 1
+    array: 1
+    matrix: 1
+    bmatrix: 1
+    pmatrix: 1
+    vmatrix: 1
+    Vmatrix: 1
+    cases: 1
+    aligned: 1
+    alignat: 1
+
+# Remove trailing whitespace
+removeTrailingWhitespace:
+    beforeProcessing: 0
+    afterProcessing: 1
+
+# Line breaks and spacing
+modifyLineBreaks:
+    preserveBlankLines: 1
+    condenseMultipleBlankLinesInto: 1
+
+    # Environments
+    environments:
+        BeginStartsOnOwnLine: 1
+        BodyStartsOnOwnLine: 1
+        EndStartsOnOwnLine: 1
+        EndFinishesWithLineBreak: 1
+
+    # Commands
+    commands:
+        CommandStartsOnOwnLine: 0
+        CommandNameFinishesWithLineBreak: 0
+
+    # Items
+    items:
+        ItemStartsOnOwnLine: 1
+        ItemFinishesWithLineBreak: 1
+
+    # Sections
+    sections:
+        section:
+            BeginStartsOnOwnLine: 1
+            EndStartsOnOwnLine: 1
+        subsection:
+            BeginStartsOnOwnLine: 1
+            EndStartsOnOwnLine: 1
+        subsubsection:
+            BeginStartsOnOwnLine: 1
+            EndStartsOnOwnLine: 1
+
+# Maximum line width (0 = no limit)
+maximumWidth: 100
+
+# Backup files
+onlyOneBackUp: 1  # Keep only one backup (.bak0)
+maxNumberOfBackUps: 1
+
+# File extensions to process
+fileExtensionPreference:
+    .tex: 2
+    .sty: 2
+    .cls: 2
+    .bib: 1
+
+# Verbatim environments (don't modify indentation)
+verbatimEnvironments:
+    verbatim: 1
+    lstlisting: 1
+    minted: 1
+    comment: 1
+
+# No additional indent for these environments
+noAdditionalIndent:
+    verbatim: 1
+    lstlisting: 1
+    minted: 1
+    comment: 1
+
+# Custom environment rules (add your own)
+# Example:
+# myenvironment: 1
+
+# Respect inline math ($...$) and display math ($$...$$)
+# Don't break lines within math
+noAdditionalIndentGlobal:
+    inlineMath: 1
+    displayMath: 1
+
+# Alignment within environments
+alignContentAfterDoubleBackSlash:
+    tabular: 1
+    array: 1
+    matrix: 1
+    align: 1
+    alignat: 1
+
+# Spaces around operators in alignment
+spacesAroundDoubleBackSlash: 1
+
+# Indent nested environments
+indentIncrement: "    "  # Matches defaultIndent
+
+# Special cases for Beamer overlays
+# Don't break lines for overlay specifications
+noAdditionalIndent:
+    overlay: 1
+
+# Logging and debugging
+logFilePreferences:
+    showDecorationStartCodeBlockTrace: 0
+    showDecorationFinishCodeBlockTrace: 0
+    endLogFileWith: ""
+
+# Replacements (advanced)
+# replacements:
+#     -
+#       before: "\\input\s+"
+#       after: "\\input{"
+#       lookfor: "this"
+#       when: "after"
+
+# Project-specific rules
+# Add custom environments, commands, etc. below
+
+# Example for custom theorem environments:
+# indentRules:
+#     theorem: 1
+#     lemma: 1
+#     proposition: 1
+#     corollary: 1
+#     definition: 1
+#     example: 1
+#     proof: 1
+
+# Notes:
+# - Use "latexindent -w file.tex" to modify file in place (creates backup)
+# - Use "latexindent -o output.tex input.tex" to write to different file
+# - Use "latexindent -l=indentconfig.yaml file.tex" to use this config
+# - Set "defaultIndent" to "\t" for tabs instead of spaces

@@ -5,12 +5,12 @@
     "email": "astoreyai@gmail.com"
   },
   "description": "Professional productivity tools and skills for Claude Code users",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "plugins": [
     {
       "name": "astoreyai-productivity-skills",
-      "description": "Productivity skills including memory-keeper and obsidian-memory-keeper for automated context management, daily notes, session tracking, and project status updates with Obsidian vault integration",
-      "version": "1.1.0",
+      "description": "Productivity skills including memory-keeper, obsidian-memory-keeper, and todo-keeper for automated context management, daily notes, task tracking, session management, and project status updates with Obsidian vault integration",
+      "version": "1.2.0",
       "source": "./",
       "strict": false,
       "author": {
@@ -30,16 +30,21 @@
         "project-management",
         "obsidian",
         "daily-notes",
-        "knowledge-base"
+        "knowledge-base",
+        "task-management",
+        "todo",
+        "todowrite"
       ],
       "category": "productivity",
       "skills": [
         "./skills/memory-keeper",
-        "./skills/obsidian-memory-keeper"
+        "./skills/obsidian-memory-keeper",
+        "./skills/todo-keeper"
       ],
       "commands": [
         "./commands/update-memory.md",
-        "./commands/daily-note.md"
+        "./commands/daily-note.md",
+        "./commands/todo.md"
       ],
       "hooks": {
         "SessionEnd": [

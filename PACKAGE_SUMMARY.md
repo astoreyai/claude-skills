@@ -1,9 +1,10 @@
 # Claude Code Productivity Skills - Package Summary
 
-**Repository**: astoreyai/claude-skills  
-**Version**: 1.0.0  
-**Status**: ✅ Production Ready  
-**Created**: 2025-11-20  
+**Repository**: astoreyai/claude-skills
+**Version**: 1.1.0
+**Status**: ✅ Production Ready
+**Created**: 2025-11-20
+**Updated**: 2025-11-20 (Added obsidian-memory-keeper)  
 
 ---
 
@@ -19,14 +20,16 @@ A complete Claude Code plugin marketplace with **multiple productivity skills**,
 │   ├── plugin.json              # Plugin metadata
 │   └── marketplace.json         # Marketplace configuration
 ├── skills/
-│   ├── memory-keeper/           # 🎯 NEW: Auto-memory management
+│   ├── memory-keeper/           # 🎯 NEW: Auto-memory management (CLAUDE.md)
+│   ├── obsidian-memory-keeper/  # 🎯 NEW: Obsidian daily notes integration
 │   ├── google/                  # Google Workspace integration (4 skills)
 │   ├── obsidian/                # Obsidian knowledge management (4 skills)
 │   ├── review/                  # Academic review tools (2 skills)
 │   ├── organization/            # File organization (1 skill)
 │   └── utility/                 # Utility tools (3 skills)
 ├── commands/
-│   └── update-memory.md         # /update-memory slash command
+│   ├── update-memory.md         # /update-memory slash command
+│   └── daily-note.md            # 🎯 NEW: /daily-note slash command
 ├── docs/                        # Templates and guides
 ├── README.md                    # Main documentation
 ├── INSTALLATION.md              # Installation guide
@@ -141,10 +144,13 @@ The SessionEnd hook automatically updates CLAUDE.md timestamp when you exit Clau
 
 ---
 
-## Skills Included (15 Total)
+## Skills Included (16 Total)
 
 ### 1. Memory Keeper ⭐ NEW
 Automated CLAUDE.md context management
+
+### 2. Obsidian Memory Keeper ⭐ NEW
+Daily notes, session tracking, and Obsidian vault synchronization
 
 ### Google Workspace (4 skills)
 - google-calendar-sync

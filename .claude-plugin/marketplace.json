@@ -5,12 +5,12 @@
     "email": "astoreyai@gmail.com"
   },
   "description": "Professional productivity tools and skills for Claude Code users",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "plugins": [
     {
       "name": "astoreyai-productivity-skills",
-      "description": "Productivity skills including memory-keeper, obsidian-memory-keeper, and todo-keeper for automated context management, daily notes, task tracking, session management, and project status updates with Obsidian vault integration",
-      "version": "1.2.0",
+      "description": "Productivity skills including memory-keeper, obsidian-memory-keeper, and todo-keeper with automatic todo persistence for automated context management, daily notes, task tracking, session management, and project status updates with Obsidian vault integration",
+      "version": "1.3.0",
       "source": "./",
       "strict": false,
       "author": {
@@ -33,7 +33,9 @@
         "knowledge-base",
         "task-management",
         "todo",
-        "todowrite"
+        "todowrite",
+        "persistence",
+        "hooks"
       ],
       "category": "productivity",
       "skills": [
@@ -47,6 +49,18 @@
         "./commands/todo.md"
       ],
       "hooks": {
+        "SessionStart": [
+          {
+            "matcher": "*",
+            "hooks": [
+              {
+                "type": "command",
+                "command": "python3 ${PLUGIN_DIR}/skills/todo-keeper/load_todos.py",
+                "timeout": 10
+              }
+            ]
+          }
+        ],
         "SessionEnd": [
           {
             "matcher": "*",
@@ -55,6 +69,11 @@
                 "type": "command",
                 "command": "python3 ${PLUGIN_DIR}/skills/memory-keeper/auto_update.py",
                 "timeout": 30
+              },
+              {
+                "type": "command",
+                "command": "python3 ${PLUGIN_DIR}/skills/todo-keeper/save_todos.py",
+                "timeout": 10
               }
             ]
           }

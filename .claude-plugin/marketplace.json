@@ -5,12 +5,12 @@
     "email": "astoreyai@gmail.com"
   },
   "description": "Professional productivity tools and skills for Claude Code users",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "plugins": [
     {
       "name": "astoreyai-productivity-skills",
-      "description": "Productivity skills including memory-keeper for automated context management, session tracking, and project status updates",
-      "version": "1.0.0",
+      "description": "Productivity skills including memory-keeper and obsidian-memory-keeper for automated context management, daily notes, session tracking, and project status updates with Obsidian vault integration",
+      "version": "1.1.0",
       "source": "./",
       "strict": false,
       "author": {
@@ -27,14 +27,19 @@
         "context-management",
         "automation",
         "session-tracking",
-        "project-management"
+        "project-management",
+        "obsidian",
+        "daily-notes",
+        "knowledge-base"
       ],
       "category": "productivity",
       "skills": [
-        "./skills/memory-keeper"
+        "./skills/memory-keeper",
+        "./skills/obsidian-memory-keeper"
       ],
       "commands": [
-        "./commands/update-memory.md"
+        "./commands/update-memory.md",
+        "./commands/daily-note.md"
       ],
       "hooks": {
         "SessionEnd": [

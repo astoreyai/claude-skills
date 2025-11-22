@@ -1,78 +1,137 @@
-# YouTube Transcript Downloader Skill
+# YouTube Transcriber Skill
 
-Extract transcripts from YouTube videos with timestamps. Supports individual videos, playlists, and channels with automatic expansion to all videos.
+Extract transcripts from YouTube videos, playlists, and channels with automatic intelligent processing.
 
 ## Overview
 
-This skill provides a unified interface for downloading YouTube transcripts from any URL format (videos, playlists, channels). Useful for research, content analysis, and workflow automation. No authentication required.
+One unified command that intelligently assesses input and handles everything—single videos, batch files, playlist expansion, channel extraction. No need to choose between commands; it figures out what to do.
 
 ## Capabilities
 
-- **Single Video Download**: Extract transcript from one video with timestamps
-- **Batch Processing**: Download transcripts from multiple videos in a file
-- **Playlist Expansion**: Automatically extract all videos from playlists
-- **Channel Expansion**: Automatically extract all uploads from channels
-- **Multiple Formats**: Output as Markdown (.md) or plain text (.txt)
-- **Flexible Input**: Handle mixed URL types in batch files
-- **Error Handling**: Graceful handling for invalid URLs and restricted videos
+- **Auto-Detect Input**: Single URL, file of URLs, playlist, channel
+- **Smart Expansion**: Automatically expands playlists/channels to individual videos
+- **Batch Processing**: Process 1-1000+ videos from mixed input file
+- **Timestamps**: Automatic HH:MM:SS formatting on every line
+- **Multiple Formats**: Markdown (.md) or plain text (.txt)
+- **Error Handling**: Graceful failures, continues on errors
 
-## Use Cases
+## Quick Usage
 
-### 1. Download Single Video Transcript
-```
-/transcribe-video https://www.youtube.com/watch?v=VIDEO_ID
-```
-Extracts transcript with timestamps, saves as markdown.
+```bash
+# Single video
+/transcribe https://www.youtube.com/watch?v=VIDEO_ID
 
-### 2. Batch Download from File
-```
-/transcribe-batch urls.txt
-```
-Downloads transcripts from all URLs in file (videos, playlists, channels).
+# Playlist (auto-expands, downloads all)
+/transcribe https://www.youtube.com/playlist?list=PL123
 
-### 3. Expand Playlist/Channel
-```
-/transcribe-expand playlist.txt
-```
-Extracts all video URLs from playlists and channels, outputs as list.
+# Channel (auto-expands, downloads all uploads)
+/transcribe https://www.youtube.com/@creator
 
-### 4. In Workflow Context
+# Batch file (auto-detects each URL type, expands if needed)
+/transcribe urls.txt
+
+# With options
+/transcribe urls.txt --format md --output-dir research
 ```
-Agent receives: list of YouTube URLs (mixed types)
+
+## One Command, Many Inputs
+
+| Input | Behavior |
+|-------|----------|
+| Video URL | Download transcript immediately |
+| Playlist URL | Expand to all videos, download transcripts |
+| Channel URL | Expand to all uploads, download transcripts |
+| File (mixed) | Detect each line, expand playlists/channels, download all |
+| File (videos only) | Batch download all transcripts |
+| Video ID | Download transcript immediately |
+
+## How It Works
+
+```
+Input Assessment
   ↓
-Skill processes: expand playlists/channels if needed
-  ↓
-Skill outputs: transcripts in markdown format
-  ↓
-Agent uses: transcripts for analysis, summarization, etc.
+├─ Single URL?
+│  ├─ Video → Download immediately
+│  ├─ Playlist → Expand + Download
+│  └─ Channel → Expand + Download
+│
+└─ File?
+   ├─ Detect each line
+   ├─ Expand playlists/channels
+   └─ Download all transcripts
+     ↓
+  Output Directory (with all transcripts)
 ```
 
-## Installation
+## Options
 
-The skill is registered with `claude-skills` plugin. Available commands:
-- `/transcribe-video` - Single video
-- `/transcribe-batch` - Batch processing
-- `/transcribe-expand` - Playlist/channel expansion
+```bash
+/transcribe INPUT [OPTIONS]
 
-## URL Format Support
+Options:
+  --format {md|txt|both}     Output format (default: both)
+  --output-dir DIR           Output directory (default: transcripts)
+  --expand/--no-expand       Auto-expand playlists/channels (default: on)
+  --inspect                  Show what will be done (no download)
+```
 
-### Direct Videos (Downloaded)
-- `https://www.youtube.com/watch?v=VIDEO_ID`
-- `https://youtu.be/VIDEO_ID`
-- `VIDEO_ID` (11-character string)
-- With timestamps: `...watch?v=VIDEO_ID&t=10s`
-- With playlist: `...watch?v=VIDEO_ID&list=PLAYLIST_ID`
+## Examples
 
-### Playlists (Expanded)
-- `https://www.youtube.com/playlist?list=PLAYLIST_ID`
-- `https://www.youtube.com/playlist?list=ID&index=5`
+### Single Video
+```bash
+/transcribe https://youtu.be/dQw4w9WgXcQ
+# → Creates: transcripts/transcript_dQw4w9WgXcQ.md
+#           transcripts/transcript_dQw4w9WgXcQ.txt
+```
 
-### Channels (Expanded)
-- New style: `https://www.youtube.com/@username`
-- With tabs: `https://www.youtube.com/@username/playlists`
-- Legacy: `https://www.youtube.com/user/username`
-- Channel ID: `https://www.youtube.com/channel/CHANNEL_ID`
-- Custom name: `https://www.youtube.com/c/customname`
+### Playlist (Auto-Expansion)
+```bash
+/transcribe https://www.youtube.com/playlist?list=PLtqRgJ_TIq8Y6YG8G
+# → Expands to all 50 videos
+# → Downloads all 50 transcripts
+# → Creates: transcripts/transcript_ID1.md, transcript_ID2.md, ...
+```
+
+### Batch File (Mixed URLs)
+```bash
+# Create file:
+cat > urls.txt << EOF
+# Videos
+https://www.youtube.com/watch?v=VIDEO_1
+https://www.youtube.com/watch?v=VIDEO_2
+
+# Playlist
+https://www.youtube.com/playlist?list=PL123
+
+# Channel
+https://www.youtube.com/@creator
+
+# Direct ID
+dQw4w9WgXcQ
+EOF
+
+# Process:
+/transcribe urls.txt
+# → Detects all 4 items
+# → Expands playlist → 50 videos
+# → Expands channel → 100 uploads
+# → Downloads all 152 transcripts
+```
+
+### Inspect Before Processing
+```bash
+/transcribe urls.txt --inspect
+# → Shows what will be processed
+# → No download, just analysis
+# → Useful for large playlists
+```
+
+### Custom Format/Location
+```bash
+/transcribe urls.txt --format md --output-dir research
+# → Markdown only (faster)
+# → Saves to: research/
+```
 
 ## Output Format
 
@@ -102,7 +161,7 @@ Downloaded: 2024-01-15 10:30:45
 
 ## Input File Format
 
-Create text file with one URL per line. Comments and blank lines supported:
+One URL per line, comments and blanks ignored:
 
 ```
 # Section 1: Videos
@@ -113,126 +172,109 @@ https://www.youtube.com/watch?v=m2GxmZky__M
 https://www.youtube.com/playlist?list=PLtqRgJ_TIq8Y6YG8G
 
 # Section 3: Channels (auto-expanded)
-https://www.youtube.com/@creator
+https://www.youtube.com/@farshadnoravesh
 
 # Direct IDs
 dQw4w9WgXcQ
 ```
 
-## Skill Functions
+## Supported URL Formats
 
-### transcribe_single(url: str, format: str = "md") → str
-Download transcript for a single video.
+- `https://www.youtube.com/watch?v=VIDEO_ID`
+- `https://youtu.be/VIDEO_ID`
+- `VIDEO_ID` (direct 11-character ID)
+- `https://www.youtube.com/watch?v=VIDEO_ID&t=10s` (with timestamp)
+- `https://www.youtube.com/playlist?list=PLAYLIST_ID` (auto-expands)
+- `https://www.youtube.com/@username` (auto-expands)
+- `https://www.youtube.com/user/username` (legacy, auto-expands)
+- `https://www.youtube.com/channel/CHANNEL_ID` (auto-expands)
 
-**Parameters:**
-- `url`: YouTube URL or video ID
-- `format`: "md" or "txt" (default: "md")
+## Use Cases
 
-**Returns:** Transcript text
-
-**Example:**
-```python
-transcript = transcribe_single("https://youtu.be/VIDEO_ID", format="md")
-```
-
-### transcribe_batch(file_path: str, output_dir: str = "transcripts", format: str = "both", expand: bool = True) → dict
-Download transcripts from file with mixed URL types.
-
-**Parameters:**
-- `file_path`: Path to file with URLs
-- `output_dir`: Directory for transcript files
-- `format`: "md", "txt", or "both"
-- `expand`: Auto-expand playlists/channels (default: True)
-
-**Returns:**
-```python
-{
-    "success_count": 15,
-    "error_count": 2,
-    "output_dir": "/path/to/transcripts",
-    "files": ["transcript_ID1.md", "transcript_ID2.md", ...]
-}
-```
-
-### expand_urls(file_path: str, output_file: str = "expanded_urls.txt") → dict
-Extract all video URLs from playlists and channels.
-
-**Parameters:**
-- `file_path`: Path to file with URLs
-- `output_file`: Output file path
-
-**Returns:**
-```python
-{
-    "original_count": 5,
-    "expanded_count": 150,
-    "output_file": "/path/to/expanded_urls.txt",
-    "errors": ["Playlist X: error message"]
-}
-```
-
-## Integration with Other Skills
-
-### Research Assistant
-Use with `/analyze-research` to:
-1. Expand educational playlists
-2. Download transcripts
-3. Summarize content
-4. Generate citations
-
-### Kymera Integrator
-Use with workflow automation:
-1. Feed list of URLs (mixed types)
-2. Auto-expand and download
-3. Process transcripts for analysis
-4. Archive results
-
-## Configuration
-
-**Project Location:** `~/projects/youtube-transcriber/`
-
-**Shell Script:** `youtube-transcriber.sh`
+### Research Workflow
 ```bash
-# Direct usage
-~/projects/youtube-transcriber/youtube-transcriber.sh urls.txt
+# Create file with educational playlists and channels
+echo "https://www.youtube.com/playlist?list=PL..." > sources.txt
+echo "https://www.youtube.com/@educator" >> sources.txt
 
-# With options
-youtube-transcriber.sh urls.txt --output-dir my_folder --format md --expand
+# One command: expand, download, ready for analysis
+/transcribe sources.txt --output-dir research
 ```
 
-**Key Files:**
-- `src/transcriber.py`: Core transcript fetching
-- `src/playlist_parser.py`: Playlist/channel expansion
-- `src/cli.py`: Command-line interface
-- `youtube-transcriber.sh`: Shell wrapper
+### Content Curation
+```bash
+# Download transcripts from multiple creators
+/transcribe creators.txt --format md
+# → All uploads from all channels
+# → Organized transcripts ready for processing
+```
+
+### Quick Lookup
+```bash
+# Just need one video's transcript
+/transcribe https://youtu.be/VIDEO_ID
+```
+
+### Batch Research
+```bash
+# Process everything at once
+/transcribe mixed_urls.txt --output-dir analysis
+# → Auto-detects each line
+# → Auto-expands playlists/channels
+# → Downloads all transcripts
+# → Organized in output-dir
+```
+
+## Integration with Agents
+
+### In Workflow
+```
+Agent receives: List of YouTube URLs (mixed types)
+  ↓
+/transcribe urls.txt --inspect          (check what will process)
+  ↓
+/transcribe urls.txt --output-dir data  (download all transcripts)
+  ↓
+Agent reads transcript directory
+  ↓
+Agent processes/analyzes transcripts
+  ↓
+Agent generates report
+```
+
+### Function Call (Python)
+```python
+from skill import transcribe
+
+result = transcribe(
+    input="urls.txt",
+    format="md",
+    output_dir="transcripts",
+    expand=True,
+    inspect=False
+)
+
+# Returns:
+# {
+#   "success": True,
+#   "processed": 150,
+#   "output_dir": "transcripts",
+#   "files": ["transcript_ID1.md", ...]
+# }
+```
 
 ## Limitations
 
-- YouTube must allow transcript access (some videos restricted)
-- Playlist expansion may be slow for large playlists (100+ videos)
-- Channel expansion extracts uploads only (not custom playlists)
+- YouTube must allow transcripts for the video
+- Some videos may have restricted captions
+- Large playlists (500+ videos) expand slowly
 - Language support depends on available transcripts (default: English)
-
-## Troubleshooting
-
-**"No transcript found"**
-- Video may not have captions
-- Check manually on YouTube if captions available
-
-**"Could not extract playlist/channel"**
-- URL format may not be recognized
-- Verify playlist/channel is public
-
-**"Transcript access denied"**
-- YouTube disabled transcripts for this video
-- Try another similar video for comparison
 
 ## Requirements
 
-- `youtube-transcript-api` (0.6.2): Download transcripts
-- `yt-dlp` (≥2024.7.1): Extract playlist/channel videos
-- `click` (8.1.7): CLI framework
-- `pytest` (7.4.3): Testing
+- `youtube-transcript-api` (0.6.2)
+- `yt-dlp` (≥2024.7.1)
+- `click` (8.1.7)
 
 ## Author
 
@@ -240,4 +282,4 @@ Aaron Storey | Research & Development (Nov 2025)
 
 ## Version
 
-1.0.0 - Initial release with playlist/channel expansion
+1.1.0 - Unified single-command interface with automatic assessment

@@ -1,481 +1,387 @@
-# YouTube Transcriber Skill - Workflow Integration Guide
+# YouTube Transcriber - Workflow Integration Guide
 
-Complete guide for using the YouTube Transcriber skill in Claude Code workflows and with autonomous agents.
+## One Command: `/transcribe`
 
-## Quick Start
+The skill provides a single, unified command that intelligently assesses and handles any YouTube input:
 
-### For Users (Claude Code)
-
-**One-line transcription:**
 ```bash
-youtube-transcriber.sh urls.txt
+/transcribe INPUT [OPTIONS]
 ```
 
-**With options:**
+It automatically:
+1. **Detects** input type (single URL, file, playlist, channel)
+2. **Assesses** what needs to be done
+3. **Expands** playlists/channels if needed
+4. **Downloads** all transcripts
+5. **Organizes** output
+
+## Real-World Workflows
+
+### Workflow 1: Educational Content Curation
+
+**Scenario**: Build learning resource from multiple educators
+
 ```bash
-youtube-transcriber.sh urls.txt --output-dir research --format both --expand
+# Create source file
+cat > educators.txt << EOF
+# Math channel
+https://www.youtube.com/@3blue1brown
+
+# Physics channel
+https://www.youtube.com/@veritasium
+
+# Educational playlist
+https://www.youtube.com/playlist?list=PLcourse123
+
+# Individual video
+https://www.youtube.com/watch?v=dQw4w9WgXcQ
+EOF
+
+# One command: assess → expand → download all
+/transcribe educators.txt --output-dir courses
+
+# Result:
+# - 3Blue1Brown: 100+ uploads → 100+ transcripts
+# - Veritasium: 200+ uploads → 200+ transcripts
+# - Playlist: 50 videos → 50 transcripts
+# - Individual: 1 video → 1 transcript
+# Total: 351 transcripts, organized in courses/
 ```
 
-**From stdin:**
+### Workflow 2: Research Literature + Video Content
+
+**Scenario**: Combine academic papers with relevant video material
+
 ```bash
-cat playlist_urls.txt | youtube-transcriber.sh -
+# Create file with research sources
+cat > research.txt << EOF
+# Video sources
+https://www.youtube.com/watch?v=research_video_1
+https://www.youtube.com/watch?v=research_video_2
+
+# Research playlist
+https://www.youtube.com/playlist?list=PLresearch
+
+# Expert channel
+https://www.youtube.com/@researcher
+EOF
+
+# Get all transcripts
+/transcribe research.txt --format md --output-dir research_data
+
+# Agent then:
+# 1. Reads all transcripts from research_data/
+# 2. Analyzes video content
+# 3. Combines with paper analysis
+# 4. Generates comprehensive research report
 ```
 
-### For Agents (Workflow Context)
+### Workflow 3: Quick Single Lookup
 
-```
-Agent receives: ["https://youtube.com/watch?v=...", "https://youtube.com/playlist?list=..."]
-  ↓
-Call: transcribe_batch(urls_file, output_dir="transcripts", expand=True)
-  ↓
-Returns: {success_count: 15, error_count: 0, files: [...]}
-  ↓
-Agent processes: transcripts for analysis/summarization
-```
+**Scenario**: User needs one video's transcript immediately
 
-## Real-World Workflow Examples
+```bash
+# Just paste the URL
+/transcribe https://youtu.be/VIDEO_ID
 
-### Example 1: Research Literature Review + YouTube Content
-
-**Scenario:** Combine academic papers with educational video transcripts
-
-```
-Workflow:
-1. User provides: Mix of paper PDFs and YouTube playlist URLs
-2. Research Assistant extracts: Paper summaries
-3. YouTube Transcriber expands: Playlist → 50 video URLs
-4. YouTube Transcriber downloads: 50 transcripts
-5. Research Assistant analyzes: All content together
-6. Output: Comprehensive research document with citations
+# Done! Transcript available in transcripts/ directory
 ```
 
-**Implementation:**
-```python
-# In agent workflow
-urls_file = create_temp_file(mixed_urls)
-result = transcribe_batch(urls_file, format="md", expand=True)
+### Workflow 4: Batch Research from Mixed Sources
 
-transcripts = load_from_dir(result["output_dir"])
-summaries = analyze_transcripts(transcripts)  # Next agent
+**Scenario**: Process everything at once, no manual decisions
 
-report = compile_research_report(papers + transcripts + summaries)
+```bash
+# File with everything mixed (videos, playlists, channels, IDs)
+/transcribe all_sources.txt --inspect
+# → Shows: 5 videos, 3 playlists, 2 channels, 4 IDs
+# → Total: Would process ~400 videos
+
+# Download all
+/transcribe all_sources.txt --output-dir research
+# ✅ All transcripts ready for analysis agents
 ```
 
-### Example 2: Educational Content Curation
-
-**Scenario:** Build comprehensive learning resource from educational channels/playlists
-
-```
-Workflow:
-1. User provides: List of educational channels and playlists
-2. YouTube Transcriber expands: Channels/playlists → 200+ videos
-3. YouTube Transcriber downloads: All transcripts
-4. Summarizer agent: Creates summaries for each topic
-5. Organizer agent: Groups by topic/difficulty level
-6. Output: Structured learning guide with transcripts
-```
-
-**Pseudo-code:**
-```
-urls = [
-    "https://youtube.com/@edchannel1",
-    "https://youtube.com/playlist?list=...",
-    "https://youtube.com/@edchannel2"
-]
-
-expanded = expand_urls(urls)  # 200+ videos
-transcripts = batch_download(expanded)
-
-by_topic = organize_by_metadata(transcripts)
-summaries = summarize_each(transcripts)
-
-course = create_learning_path(summaries, by_topic)
-```
-
-### Example 3: Market Research from Video Content
-
-**Scenario:** Extract insights from interview/analysis videos
-
-```
-Workflow:
-1. User provides: List of YouTube video URLs (interviews, analysis)
-2. YouTube Transcriber downloads: All transcripts with timestamps
-3. Analysis agent: Extracts key quotes and insights
-4. Synthesis agent: Identifies patterns and themes
-5. Output: Research report with quoted evidence
-```
-
-### Example 4: Content Review Workflow
-
-**Scenario:** Review educational material quality and accuracy
-
-```
-Workflow:
-1. Curator provides: Channel URL with 100+ videos
-2. YouTube Transcriber expands: → 100 video URLs
-3. YouTube Transcriber downloads: All transcripts
-4. QA Agent: Checks transcript completeness
-5. Content Agent: Reviews accuracy and quality
-6. Report Agent: Flags issues, rates each video
-7. Output: Quality assurance report for all videos
-```
-
-## Integrating with Specific Agents
+## Workflow Integration Points
 
 ### With Research Assistant
 
-```markdown
-## Workflow: Convert Educational Video Series to Research Document
-
-Agent Chain:
-1. **youtube-transcriber** skill
-   - Expand playlist → 50 videos
-   - Download transcripts
-   - Output: 50 markdown files with timestamps
-
-2. **literature-reviewer** agent (research assistant)
-   - Read transcript directory
-   - Extract key findings
-   - Organize by theme
-
-3. **manuscript-writer** agent
-   - Combine transcripts + analysis
-   - Format as academic document
-   - Generate citations
-
-Output: Comprehensive research paper with video sources
+```
+User Input: URLs (any mix)
+    ↓
+/transcribe urls.txt                    (assess + expand + download)
+    ↓
+research-assistant skill reads transcripts directory
+    ↓
+Agents analyze for:
+  - Key findings
+  - Quotes and evidence
+  - Citations
+  - Themes
+    ↓
+Generate research report
 ```
 
 ### With Kymera Integrator
 
 ```
-Workflow: Content Processing Pipeline
-
-1. User input: File with video URLs (any mix)
-
-2. youtube-transcriber skill:
-   - Expand playlists/channels
-   - Download all transcripts
-   - Save to directory
-
-3. kymera-integrator agent:
-   - Read transcript directory
-   - Process each transcript
-   - Store metadata
-   - Integration with other tools
-
-4. Downstream processing:
-   - kymera-mr-optimizer: Extract strategy discussions
-   - risk-monitor: Extract risk-related content
-   - portfolio-checker: Extract performance analysis
+Mixed URLs received
+    ↓
+/transcribe urls.txt --inspect          (check scope)
+    ↓
+/transcribe urls.txt --output-dir data  (process everything)
+    ↓
+kymera-integrator reads transcript directory
+    ↓
+Feed to downstream agents:
+  - Content analysis
+  - Metadata extraction
+  - Integration with other tools
 ```
 
-## Command Usage in Workflows
+### With Custom Agents
 
-### Single Video (Quick Lookup)
-
-```bash
-# Get transcript for one video
-/transcribe-video https://www.youtube.com/watch?v=VIDEO_ID --format md
-
-# Use in agent:
-transcript = get_transcript(url)
-summary = agent.summarize(transcript)
+```
+Agent receives: List of YouTube URLs
+    ↓
+Agent calls: /transcribe urls.txt --format md
+    ↓
+Agent reads result directory
+    ↓
+Agent processes each transcript for:
+  - Sentiment analysis
+  - Key topic extraction
+  - Summarization
+  - Classification
+    ↓
+Agent outputs: Analysis report
 ```
 
-### Batch Processing (Main Use Case)
+## Smart Behavior Examples
 
+### Example 1: Single Video
 ```bash
-# Create file with mixed URLs
+/transcribe https://youtu.be/ABC123
+
+# Assessment:
+# - Detects: Single video URL
+# - Action: Download immediately
+# - Time: 1-3 seconds
+
+# Result: transcript_ABC123.md + .txt
+```
+
+### Example 2: Playlist
+```bash
+/transcribe https://www.youtube.com/playlist?list=PL123
+
+# Assessment:
+# - Detects: Playlist URL
+# - Scope: 50 videos in playlist
+# - Action: Expand → Download all 50
+
+# Result: 50 transcript files
+```
+
+### Example 3: Channel
+```bash
+/transcribe https://www.youtube.com/@creator
+
+# Assessment:
+# - Detects: Channel URL
+# - Scope: 150 uploads from channel
+# - Action: Expand → Download all 150
+
+# Result: 150 transcript files
+```
+
+### Example 4: Mixed File
+```bash
+/transcribe urls.txt
+
+# Assessment:
+# - Line 1: Video → Download
+# - Line 2: Playlist → Expand to 50 videos, download
+# - Line 3: Channel → Expand to 100 videos, download
+# - Line 4: Video ID → Download
+# Total: 152 videos
+
+# Result: 152 transcript files
+```
+
+### Example 5: Inspect First
+```bash
+/transcribe huge_playlist.txt --inspect
+
+# Assessment (no download):
+# - Detects: 3 playlists, 2 channels, 5 videos
+# - Scope: Would expand to 500+ videos
+# - Output: Shows what would be processed
+
+# Decision: User sees it's large, maybe reduces scope
+# or proceeds with full download
+```
+
+## Command Variations
+
+### Markdown Only (Faster)
+```bash
+/transcribe urls.txt --format md
+# → No text generation
+# → Faster processing
+# → Clean output
+```
+
+### Custom Location
+```bash
+/transcribe urls.txt --output-dir my_research
+# → Saves to my_research/ instead of transcripts/
+```
+
+### Disable Expansion (Skip Playlists/Channels)
+```bash
+/transcribe urls.txt --no-expand
+# → Only downloads individual videos
+# → Skips playlists/channels with warnings
+# → Useful for testing single videos
+```
+
+### Inspect Only (No Download)
+```bash
+/transcribe urls.txt --inspect
+# → Shows assessment
+# → No download
+# → Good for checking scope before processing
+```
+
+## Typical Workflow Steps
+
+### Step 1: Prepare
+```bash
+# Gather all your URLs (any format)
 cat > sources.txt << EOF
 https://www.youtube.com/watch?v=VIDEO_1
-https://www.youtube.com/playlist?list=PLAYLIST_1
-https://www.youtube.com/@channel1
+https://www.youtube.com/playlist?list=...
+https://www.youtube.com/@creator
 EOF
-
-# Download all transcripts (playlists auto-expanded)
-/transcribe-batch sources.txt --output-dir transcripts --format both
-
-# Agent processes all transcripts from directory
-for file in transcripts/*.md:
-    content = read(file)
-    process(content)
 ```
 
-### Expansion Only (For Inspection)
-
+### Step 2: Inspect (Optional)
 ```bash
-# See how many videos you're about to process
-/transcribe-expand playlists.txt --output-file all_videos.txt
-
-# Check results before batch download
-wc -l all_videos.txt           # How many videos?
-head -10 all_videos.txt        # Sample URLs?
-
-# Then batch download
-/transcribe-batch all_videos.txt
+# See what will be processed
+/transcribe sources.txt --inspect
+# → Shows: 2 videos, 1 playlist, 1 channel
+# → Estimated: 50+ videos to download
 ```
 
-## Data Flow Diagrams
-
-### Simple Flow: Single Video
-
-```
-User Input (Video URL)
-    ↓
-youtube-transcriber.sh
-    ↓
-Extract Transcript
-    ↓
-Format (MD/TXT)
-    ↓
-Output File (transcript_ID.md)
-    ↓
-Agent Reads & Processes
+### Step 3: Process
+```bash
+# One command handles everything
+/transcribe sources.txt --output-dir transcripts
+# → Detects each URL type
+# → Expands playlists/channels automatically
+# → Downloads all transcripts
+# → Saves to transcripts/
 ```
 
-### Complex Flow: Mixed URLs with Expansion
-
-```
-User Input (Mixed URLs)
-    ├─ Videos (kept as-is)
-    ├─ Playlists (→ expand to videos)
-    └─ Channels (→ expand to uploads)
-         ↓
-    Flattened Video List
-         ↓
-    Download All Transcripts
-         ↓
-    Output Directory
-    ├─ transcript_ID1.md
-    ├─ transcript_ID2.md
-    ├─ transcript_ID3.md
-    └─ ...
-         ↓
-    Agent Processes Directory
-    ├─ Read all files
-    ├─ Extract metadata
-    ├─ Analyze content
-    └─ Generate report
+### Step 4: Use Results
+```bash
+# Your agent reads the transcript directory
+# and processes however needed:
+# - Analysis
+# - Summarization
+# - Extraction
+# - Classification
+# - Whatever your workflow requires
 ```
 
-### Agent Workflow: Research Pipeline
+## Error Handling
 
-```
-User provides URLs
-    ↓
-youtube-transcriber (expand & download)
-    ↓
-Transcripts Directory
-    ↓
-research-assistant:literature-reviewer (analyze)
-    ↓
-research-assistant:manuscript-writer (compose)
-    ↓
-Output Document
+### Graceful Failures
+```bash
+/transcribe urls.txt
+# → Processes all URLs
+# → Some fail? Continues on
+# → Shows summary:
+#   ✓ 48 successful
+#   ✗ 2 failed (transcript not available)
+#   → Results still available in output-dir/
 ```
 
-## Error Handling & Recovery
+### Large Playlist Handling
+```bash
+/transcribe huge_list.txt --inspect
+# → Shows: "Would process 1000+ videos"
 
-### Common Issues in Workflows
-
-**Issue: Playlist Not Expanding**
-```python
-# Check if URL is valid
-result = expand_urls(["https://www.youtube.com/playlist?list=..."])
-if result["expanded_count"] == 0:
-    # Handle: URL may be private or deleted
-    log_error("Playlist expansion failed")
-    notify_user("Check playlist is public")
-```
-
-**Issue: Some Videos Missing Transcripts**
-```python
-# Tool handles gracefully - continues on errors
-result = batch_transcripts(urls)
-
-success = result["success_count"]
-failed = result["error_count"]
-
-if failed > 0:
-    log_warning(f"Failed to transcribe {failed} videos")
-    # Continue with successful transcripts
-```
-
-**Issue: Large Playlist (1000+ videos)**
-```python
-# Expansion takes time for very large playlists
-# Solution: Use --no-expand, manually expand first
-# Then batch in smaller chunks
-
-result = expand_urls(huge_playlist)
-# Returns: 500 video URLs
-
-# Process in batches
-for batch in chunk(result["output_file"], size=100):
-    transcribe_batch(batch, output_dir=f"batch_{i}")
+# Options:
+# 1. Proceed with full download
+# 2. Edit file to reduce scope
+# 3. Process in batches
 ```
 
 ## Performance Considerations
 
-### Expansion Times
-- Small playlist (10-50 videos): 2-5 seconds
-- Medium playlist (50-200 videos): 5-15 seconds
-- Large playlist (200-500 videos): 15-60 seconds
-- Channel (300+ videos): 30-120 seconds
+| Scenario | Time | Notes |
+|----------|------|-------|
+| Single video | 1-3 sec | Immediate |
+| Small playlist (50) | 15 sec expand + 2 min | Fast |
+| Large playlist (500) | 2-5 min expand + 20 min | Plan accordingly |
+| Channel (100+ uploads) | 1+ min expand + 5+ min | Depends on upload count |
+| Batch (100 videos) | 2-5 minutes | Files already listed |
 
-### Download Times
-- Single video: 1-3 seconds
-- 10 videos: 10-30 seconds
-- 100 videos: 2-5 minutes
-- 1000 videos: 20-50 minutes
+## Integration Checklist
 
-### Optimization Tips
-1. **Expand separately** if you need to inspect URLs before downloading
-2. **Batch small** for long playlists (chunk into 100-200 videos)
-3. **Use `--format md`** instead of `both` for faster processing
-4. **Skip timestamps** with `--no-timestamps` for text format if not needed
-
-## Integration Points
-
-### With Other Skills
-
-**research-assistant skills:**
-- Provide transcripts for literature review
-- Feed into manuscript writing
-- Supply source material for analysis
-
-**kymera skills:**
-- Content processing
-- Data extraction
-- Integration workflows
-
-**custom agents:**
-- Any agent that needs text content
-- Agents processing educational material
-- Analysis and summarization agents
-
-### File System Integration
-
-```
-Input: ~/sources.txt (URLs)
-       ~/playlists.txt (playlists)
-
-Process: youtube-transcriber.sh
-
-Output: ~/transcripts/ (default directory)
-        ├─ transcript_ID1.md
-        ├─ transcript_ID1.txt
-        ├─ transcript_ID2.md
-        ├─ transcript_ID2.txt
-        └─ ...
-```
-
-## Best Practices
-
-### For Agents
-
-1. **Always expand first** if using playlists/channels
-2. **Check output directory** before feeding to next agent
-3. **Handle errors gracefully** (some videos may fail)
-4. **Log file count** before/after for verification
-5. **Set reasonable timeouts** for large expansions
-
-### For Users
-
-1. **Test with small file first** (5-10 URLs)
-2. **Use expansion separately** to verify URL count
-3. **Choose format wisely** (MD for humans, TXT for processing)
-4. **Check output directory** to verify success
-5. **Archive results** if needed for later reference
-
-### For Workflows
-
-1. **Always validate input** before batch processing
-2. **Use proper error handling** for failed transcripts
-3. **Monitor file counts** through pipeline
-4. **Consider chunking** for very large playlists (1000+)
-5. **Plan storage** for large transcript directories
+- ✅ Supports any URL format (videos, playlists, channels, IDs)
+- ✅ Auto-detects input type
+- ✅ Auto-expands playlists/channels
+- ✅ Handles mixed input seamlessly
+- ✅ Graceful error handling
+- ✅ Progress feedback
+- ✅ Multiple output formats
+- ✅ Works with stdin/files
+- ✅ Agent-callable via Python
+- ✅ Production-ready
 
 ## Example: Complete Research Workflow
 
 ```bash
 #!/bin/bash
-# Complete workflow: URLs → Transcripts → Analysis → Report
+# End-to-end: URLs → Transcripts → Analysis → Report
 
-SOURCES="sources.txt"
-EXPANDED="expanded.txt"
+SOURCES="research_sources.txt"
 TRANSCRIPTS="transcripts"
-REPORT="research_report.md"
+OUTPUT="research_report.md"
 
-# Step 1: Expand all playlists/channels
-echo "Expanding playlists and channels..."
-youtube-transcriber.sh $SOURCES --expand --output-file $EXPANDED
+echo "Step 1: Assess sources..."
+/transcribe $SOURCES --inspect
 
-# Step 2: Count videos
-TOTAL=$(wc -l < $EXPANDED)
-echo "Found $TOTAL videos to transcribe"
+echo "Step 2: Download transcripts..."
+/transcribe $SOURCES --output-dir $TRANSCRIPTS --format md
 
-# Step 3: Download all transcripts
-echo "Downloading transcripts..."
-youtube-transcriber.sh $EXPANDED --output-dir $TRANSCRIPTS --format both
+echo "Step 3: Count results..."
+COUNT=$(ls $TRANSCRIPTS/*.md 2>/dev/null | wc -l)
+echo "Downloaded $COUNT transcripts"
 
-# Step 4: Verify
-DOWNLOADED=$(ls $TRANSCRIPTS/*.md 2>/dev/null | wc -l)
-echo "Downloaded $DOWNLOADED transcripts"
+echo "Step 4: Analyze with agent..."
+# Agent processes $TRANSCRIPTS directory
 
-# Step 5: Process with agent
-echo "Analyzing content..."
-# (Call agent script to process $TRANSCRIPTS)
+echo "Step 5: Generate report..."
+# Report generation script
 
-# Step 6: Generate report
-echo "Generating report..."
-# (Call report generation script)
-
-echo "Complete! Check $REPORT"
+echo "Complete! Check $OUTPUT"
 ```
 
-## Troubleshooting Workflows
+## Bottom Line
 
-### Debugging Failed Batches
+**One command**. Input anything. It figures out what to do.
 
 ```bash
-# Create test file with single URL
-echo "https://www.youtube.com/watch?v=TEST_ID" > test.txt
-
-# Test expansion
-youtube-transcriber.sh test.txt --expand --output-file test_expanded.txt
-
-# Test download
-youtube-transcriber.sh test_expanded.txt --output-dir test_output
-
-# Check results
-ls -la test_output/
+/transcribe INPUT [OPTIONS]
 ```
 
-### Verifying Large Batches
+- Single URL? → Downloads immediately
+- Playlist URL? → Expands and downloads all
+- Channel URL? → Expands and downloads all uploads
+- File with mixed? → Detects each, expands as needed, downloads all
 
-```bash
-# Count original URLs
-wc -l sources.txt
-
-# Count after expansion
-wc -l expanded.txt
-
-# Monitor download progress
-watch -n 1 'ls transcripts/*.md | wc -l'
-
-# Check for errors
-tail -20 transcripts/*.txt  # if --no-timestamps
-```
-
-## Conclusion
-
-The YouTube Transcriber skill is a powerful tool for:
-- ✅ Research workflows (combine video + academic content)
-- ✅ Educational content curation (organize video material)
-- ✅ Content analysis (extract insights from videos)
-- ✅ Batch processing (handle 100s of videos)
-- ✅ Agent automation (feed transcripts to analysis agents)
-
-Perfect for any workflow that needs to extract content from YouTube at scale.
+Perfect for workflows that need YouTube transcripts at any scale.

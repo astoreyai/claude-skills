@@ -1,7 +1,7 @@
 {
   "name": "astoreyai-productivity-skills",
-  "version": "1.0.0",
-  "description": "Productivity skills for Claude Code including memory-keeper for automated context management",
+  "version": "1.4.0",
+  "description": "Comprehensive Claude Code skills library: 32 skills covering trading analysis, Kymera integration, YouTube transcription, Obsidian workflows, Google Workspace, memory management, and productivity automation",
   "author": {
     "name": "Aaron Storey",
     "email": "astoreyai@gmail.com",
@@ -16,6 +16,14 @@
     "context-management",
     "automation",
     "session-tracking",
-    "project-management"
+    "project-management",
+    "trading-analysis",
+    "kymera",
+    "youtube-transcription",
+    "obsidian",
+    "google-workspace",
+    "portfolio-analysis",
+    "risk-management",
+    "tax-optimization"
   ]
 }

@@ -43,19 +43,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Error backups
 - Audit logging
 
+## [1.4.0] - 2025-11-25
+
+### Added
+- **Trading & Finance** (3 skills)
+  - Trading Analysis: CSV statement parsing, performance metrics, risk analysis, LaTeX/PDF reports
+  - Portfolio Analysis Agent: Portfolio performance analysis and projections
+  - Forecasting Agent: Financial forecasting and Monte Carlo simulations
+
+- **Kymera Integration** (6 skills)
+  - Portfolio Checker: Validates 90% win rate claims, identifies risk violations
+  - MR Optimizer: Mean reversion strategy parameter optimization
+  - Strategy Integrator: Bidirectional portfolio/MR data flow management
+  - Risk Monitor: Real-time position monitoring, -5% stop enforcement
+  - Tax Optimizer: Quarterly tax calculation, tax-loss harvesting
+  - Brand Skill: Kymera branding guidelines and assets
+
+- **Session Management** (4 skills)
+  - Memory Keeper: Automated CLAUDE.md context management
+  - Obsidian Memory Keeper: Daily notes and session tracking
+  - Todo Keeper: Task persistence with SessionStart/End hooks
+  - Vault Keeper: Obsidian vault structure validation
+
+- **Content & Media** (6 skills)
+  - YouTube Transcriber, YouTube Transcript Extractor
+  - Transcript Archiver, Transcript to Logseq, Transcript to Obsidian
+  - STT Transcription
+
+- **System Tools** (2 skills)
+  - System Health Check: System diagnostics and monitoring
+  - Smart Screenshot: OCR and context extraction
+
+### Changed
+- Updated plugin.json to v1.4.0
+- Reorganized README with 8 skill categories
+- Added skill selection guide
+- Updated repository structure documentation
+
+### Total Skills: 32
+
 ## [Unreleased]
 
-### Planned for v1.1.0
-- Session summary generation
-- Project milestone detection
-- Smart context preservation
-- Conversation analysis
-
-### Planned for v1.2.0
-- Multi-project workspace support
-- Team collaboration features
-- Memory export/import
-- Third-party tool integrations
+### Planned
+- Google Workspace OAuth automation
+- Skill dependency management
+- Cross-skill workflows
 
 ---
 

@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kymera Systems | Light Mode</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Orbitron:wght@500;600;700;800&family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Foundation - Light */
+      --ky-light-bg: #F8FAFC;
+      --ky-light-surface: #FFFFFF;
+      --ky-light-elevated: #F1F5F9;
+      --ky-light-border: rgba(10, 14, 26, 0.1);
+
+      /* Signature Blue (adjusted for light) */
+      --ky-blue-primary: #0066CC;
+      --ky-blue-dark: #004499;
+      --ky-blue-light: #E6F2FF;
+      --ky-blue-accent: #0088FF;
+
+      /* Status */
+      --ky-success: #059669;
+      --ky-warning: #D97706;
+      --ky-critical: #DC2626;
+
+      /* Text */
+      --ky-text-primary: #0A0E1A;
+      --ky-text-secondary: rgba(10, 14, 26, 0.7);
+      --ky-text-muted: rgba(10, 14, 26, 0.5);
+
+      /* Fonts */
+      --ky-font-mono: 'JetBrains Mono', monospace;
+      --ky-font-display: 'Orbitron', sans-serif;
+      --ky-font-body: 'Inter Tight', sans-serif;
+    }
+
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      font-size: 16px;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--ky-font-mono);
+      background: var(--ky-light-bg);
+      color: var(--ky-text-primary);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    /* Subtle pattern background */
+    .bg-pattern {
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(circle at 50% 50%, rgba(0, 102, 204, 0.02) 1px, transparent 1px);
+      background-size: 32px 32px;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    /* Navigation */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 1rem 0;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--ky-light-border);
+    }
+
+    nav .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-family: var(--ky-font-display);
+      font-size: 1.5rem;
+      font-weight: 800;
+      text-decoration: none;
+      color: var(--ky-blue-primary);
+      letter-spacing: 0.1em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: var(--ky-font-mono);
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-decoration: none;
+      color: var(--ky-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      transition: color 0.2s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--ky-blue-primary);
+    }
+
+    /* Hero */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 100px 0 80px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--ky-blue-primary);
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-eyebrow::before {
+      content: '';
+      width: 32px;
+      height: 2px;
+      background: var(--ky-blue-primary);
+    }
+
+    h1 {
+      font-family: var(--ky-font-display);
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 800;
+      line-height: 1.1;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      margin-bottom: 1.5rem;
+      color: var(--ky-text-primary);
+    }
+
+    h1 .highlight {
+      color: var(--ky-blue-primary);
+    }
+
+    .hero-description {
+      font-family: var(--ky-font-body);
+      font-size: 1rem;
+      font-weight: 400;
+      color: var(--ky-text-secondary);
+      max-width: 480px;
+      margin-bottom: 2rem;
+      line-height: 1.7;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.875rem 1.75rem;
+      font-family: var(--ky-font-mono);
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border-radius: 4px;
+    }
+
+    .btn-primary {
+      color: #FFFFFF;
+      background: var(--ky-blue-primary);
+      box-shadow: 0 2px 8px rgba(0, 102, 204, 0.25);
+    }
+
+    .btn-primary:hover {
+      background: var(--ky-blue-dark);
+      box-shadow: 0 4px 12px rgba(0, 102, 204, 0.35);
+      transform: translateY(-1px);
+    }
+
+    .btn-ghost {
+      color: var(--ky-blue-primary);
+      background: transparent;
+      border: 2px solid var(--ky-blue-primary);
+    }
+
+    .btn-ghost:hover {
+      background: var(--ky-blue-light);
+    }
+
+    /* Data Card */
+    .data-card {
+      background: var(--ky-light-surface);
+      border: 1px solid var(--ky-light-border);
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+      overflow: hidden;
+    }
+
+    .data-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.5rem;
+      background: var(--ky-light-elevated);
+      border-bottom: 1px solid var(--ky-light-border);
+    }
+
+    .data-title {
+      font-family: var(--ky-font-display);
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--ky-blue-primary);
+    }
+
+    .data-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      color: var(--ky-success);
+    }
+
+    .data-status::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: var(--ky-success);
+      border-radius: 50%;
+    }
+
+    .data-body {
+      padding: 1.5rem;
+    }
+
+    .metric-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+      background: var(--ky-light-elevated);
+      border: 1px solid var(--ky-light-border);
+      border-radius: 6px;
+      margin-bottom: 0.75rem;
+      transition: border-color 0.2s ease;
+    }
+
+    .metric-row:hover {
+      border-color: var(--ky-blue-primary);
+    }
+
+    .metric-label {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--ky-text-muted);
+    }
+
+    .metric-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--ky-text-primary);
+    }
+
+    .metric-value.positive { color: var(--ky-success); }
+    .metric-value.warning { color: var(--ky-warning); }
+    .metric-value.negative { color: var(--ky-critical); }
+
+    /* Features */
+    .features {
+      padding: 100px 0;
+      border-top: 1px solid var(--ky-light-border);
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .section-eyebrow {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--ky-blue-primary);
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-family: var(--ky-font-display);
+      font-size: clamp(1.75rem, 3vw, 2.5rem);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--ky-text-primary);
+    }
+
+    .section-title .highlight {
+      color: var(--ky-blue-primary);
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    .feature-card {
+      background: var(--ky-light-surface);
+      border: 1px solid var(--ky-light-border);
+      border-radius: 12px;
+      padding: 2rem;
+      transition: all 0.2s ease;
+    }
+
+    .feature-card:hover {
+      border-color: var(--ky-blue-primary);
+      box-shadow: 0 8px 30px rgba(0, 102, 204, 0.1);
+      transform: translateY(-4px);
+    }
+
+    .feature-number {
+      font-family: var(--ky-font-display);
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--ky-blue-primary);
+      margin-bottom: 1rem;
+    }
+
+    .feature-title {
+      font-family: var(--ky-font-display);
+      font-size: 1rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--ky-text-primary);
+      margin-bottom: 0.75rem;
+    }
+
+    .feature-description {
+      font-family: var(--ky-font-body);
+      font-size: 0.875rem;
+      color: var(--ky-text-muted);
+      line-height: 1.6;
+    }
+
+    /* Stats Bar */
+    .stats-bar {
+      padding: 60px 0;
+      background: var(--ky-blue-primary);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2rem;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-family: var(--ky-font-display);
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #FFFFFF;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      font-size: 0.6875rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    /* CTA */
+    .cta {
+      padding: 100px 0;
+    }
+
+    .cta-card {
+      text-align: center;
+      padding: 4rem;
+      background: var(--ky-light-surface);
+      border: 2px solid var(--ky-blue-primary);
+      border-radius: 16px;
+      box-shadow: 0 8px 40px rgba(0, 102, 204, 0.1);
+    }
+
+    .cta-title {
+      font-family: var(--ky-font-display);
+      font-size: clamp(1.5rem, 3vw, 2.25rem);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--ky-text-primary);
+      margin-bottom: 1rem;
+    }
+
+    .cta-description {
+      font-family: var(--ky-font-body);
+      font-size: 1rem;
+      color: var(--ky-text-muted);
+      max-width: 500px;
+      margin: 0 auto 2rem;
+    }
+
+    /* Footer */
+    footer {
+      padding: 40px 0;
+      border-top: 1px solid var(--ky-light-border);
+      background: var(--ky-light-elevated);
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer-logo {
+      font-family: var(--ky-font-display);
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--ky-blue-primary);
+    }
+
+    .copyright {
+      font-size: 0.6875rem;
+      color: var(--ky-text-muted);
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-content { animation: fadeInUp 0.6s ease-out 0.1s both; }
+    .data-card { animation: fadeInUp 0.6s ease-out 0.2s both; }
+    .feature-card { animation: fadeInUp 0.4s ease-out both; }
+    .feature-card:nth-child(1) { animation-delay: 0.1s; }
+    .feature-card:nth-child(2) { animation-delay: 0.15s; }
+    .feature-card:nth-child(3) { animation-delay: 0.2s; }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .hero-grid { grid-template-columns: 1fr; gap: 3rem; }
+      .features-grid { grid-template-columns: repeat(2, 1fr); }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+    }
+
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .features-grid { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: 1fr; }
+      .hero-buttons { flex-direction: column; }
+      .footer-content { flex-direction: column; gap: 1rem; text-align: center; }
+    }
+
+    /* Focus states */
+    a:focus-visible, button:focus-visible {
+      outline: 2px solid var(--ky-blue-primary);
+      outline-offset: 4px;
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, .hero-content, .data-card, .feature-card {
+        animation-duration: 0.01ms !important;
+        animation-delay: 0ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* Print styles */
+    @media print {
+      nav, .bg-pattern { display: none; }
+      .hero { min-height: auto; padding: 2rem 0; }
+      .btn { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-pattern"></div>
+
+  <nav>
+    <div class="container">
+      <a href="#" class="logo">KYMERA</a>
+      <ul class="nav-links">
+        <li><a href="#">Platform</a></li>
+        <li><a href="#">Research</a></li>
+        <li><a href="#">Systems</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <div class="hero-grid">
+          <div class="hero-content">
+            <span class="hero-eyebrow">Algorithmic Intelligence</span>
+            <h1>Precision <span class="highlight">trading</span> systems</h1>
+            <p class="hero-description">Advanced quantitative strategies powered by machine learning. Real-time signal generation with institutional-grade execution.</p>
+            <div class="hero-buttons">
+              <button class="btn btn-primary">Initialize System</button>
+              <button class="btn btn-ghost">View Documentation</button>
+            </div>
+          </div>
+          <div class="data-card">
+            <div class="data-header">
+              <span class="data-title">System Status</span>
+              <span class="data-status">Online</span>
+            </div>
+            <div class="data-body">
+              <div class="metric-row">
+                <span class="metric-label">Win Rate</span>
+                <span class="metric-value positive">67.3%</span>
+              </div>
+              <div class="metric-row">
+                <span class="metric-label">Sharpe Ratio</span>
+                <span class="metric-value">2.84</span>
+              </div>
+              <div class="metric-row">
+                <span class="metric-label">Max Drawdown</span>
+                <span class="metric-value warning">-8.2%</span>
+              </div>
+              <div class="metric-row">
+                <span class="metric-label">Active Signals</span>
+                <span class="metric-value">12</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="features">
+      <div class="container">
+        <div class="section-header">
+          <p class="section-eyebrow">Capabilities</p>
+          <h2 class="section-title">System <span class="highlight">Features</span></h2>
+        </div>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-number">01</div>
+            <h3 class="feature-title">Signal Engine</h3>
+            <p class="feature-description">Multi-timeframe momentum analysis with adaptive scoring algorithms for precise entry timing.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-number">02</div>
+            <h3 class="feature-title">Risk Control</h3>
+            <p class="feature-description">Position sizing and drawdown protection with real-time portfolio risk monitoring.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-number">03</div>
+            <h3 class="feature-title">Execution</h3>
+            <p class="feature-description">Low-latency order routing with smart execution algorithms for optimal fills.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="stats-bar">
+      <div class="container">
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-value">99.9%</div>
+            <div class="stat-label">Uptime</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">12ms</div>
+            <div class="stat-label">Latency</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">2.4K</div>
+            <div class="stat-label">Daily Signals</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">87%</div>
+            <div class="stat-label">Accuracy</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta">
+      <div class="container">
+        <div class="cta-card">
+          <h2 class="cta-title">Ready to elevate your trading?</h2>
+          <p class="cta-description">Access institutional-grade quantitative systems designed for precision and performance.</p>
+          <button class="btn btn-primary">Get Started</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-logo">KYMERA SYSTEMS</div>
+        <p class="copyright">2025 Kymera Systems LLC. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

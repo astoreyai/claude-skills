@@ -1,0 +1,217 @@
+{
+  "name": "world-weaver",
+  "version": "2.0.0",
+  "description": "Bio-inspired neural memory system with analysis, diagnosis, and documentation capabilities",
+  "author": "Aaron Storey",
+  "license": "MIT",
+  "repository": "https://github.com/astoreyai/world-weaver",
+  "keywords": [
+    "memory",
+    "knowledge-graph",
+    "episodic",
+    "semantic",
+    "procedural",
+    "neo4j",
+    "qdrant",
+    "hinton",
+    "biological-plausibility",
+    "neuromodulation",
+    "eligibility-traces",
+    "analysis",
+    "diagnosis"
+  ],
+  "requires": {
+    "mcpServers": ["ww-memory"],
+    "python": ">=3.11"
+  },
+  "skills": [
+    "skills/ww-store",
+    "skills/ww-recall",
+    "skills/ww-context",
+    "skills/ww-consolidate",
+    "skills/ww-analyze",
+    "skills/ww-diagnose",
+    "skills/ww-architecture",
+    "skills/ww-visualize"
+  ],
+  "hooks": {
+    "SessionStart": {
+      "command": "python3 hooks/session_start.py",
+      "timeout": 15,
+      "description": "Load memory context from World Weaver"
+    },
+    "SessionEnd": {
+      "command": "python3 hooks/session_end.py",
+      "timeout": 30,
+      "description": "Store session summary as episode"
+    }
+  },
+  "commands": [
+    {
+      "name": "remember",
+      "file": "commands/remember.md",
+      "description": "Quick episode storage"
+    },
+    {
+      "name": "recall",
+      "file": "commands/recall.md",
+      "description": "Search World Weaver memories"
+    },
+    {
+      "name": "ww-context",
+      "file": "commands/context.md",
+      "description": "Show current memory context"
+    },
+    {
+      "name": "consolidate",
+      "file": "commands/consolidate.md",
+      "description": "Trigger memory consolidation"
+    },
+    {
+      "name": "ww-audit",
+      "file": "commands/audit.md",
+      "description": "Run comprehensive bug audit"
+    },
+    {
+      "name": "ww-visualize",
+      "file": "commands/visualize.md",
+      "description": "Generate memory visualizations"
+    },
+    {
+      "name": "ww-stats",
+      "file": "commands/stats.md",
+      "description": "Show detailed statistics"
+    },
+    {
+      "name": "ww-diagnose",
+      "file": "commands/diagnose.md",
+      "description": "Diagnose memory system problems"
+    }
+  ],
+  "agents": [
+    {
+      "name": "ww-memory",
+      "file": "agents/ww-memory.md",
+      "description": "Direct memory interface"
+    },
+    {
+      "name": "ww-retriever",
+      "file": "agents/ww-retriever.md",
+      "description": "Multi-strategy retrieval specialist"
+    },
+    {
+      "name": "ww-synthesizer",
+      "file": "agents/ww-synthesizer.md",
+      "description": "Cross-memory synthesis and context building"
+    },
+    {
+      "name": "ww-orchestrator",
+      "file": "agents/ww-orchestrator.md",
+      "description": "Multi-agent workflow orchestration"
+    },
+    {
+      "name": "ww-bio-auditor",
+      "file": "agents/ww-bio-auditor.md",
+      "description": "Biological plausibility audit (CLS, STDP, neuromodulation)"
+    },
+    {
+      "name": "ww-race-hunter",
+      "file": "agents/ww-race-hunter.md",
+      "description": "Race condition and concurrency bug detection"
+    },
+    {
+      "name": "ww-leak-hunter",
+      "file": "agents/ww-leak-hunter.md",
+      "description": "Memory leak and resource exhaustion detection"
+    },
+    {
+      "name": "ww-hinton-validator",
+      "file": "agents/ww-hinton-validator.md",
+      "description": "Validate against Hinton learning principles (FF, GLOM, Hopfield)"
+    },
+    {
+      "name": "ww-cache-analyzer",
+      "file": "agents/ww-cache-analyzer.md",
+      "description": "Cache coherence and invalidation analysis"
+    },
+    {
+      "name": "ww-trace-debugger",
+      "file": "agents/ww-trace-debugger.md",
+      "description": "Eligibility trace debugging for temporal credit assignment"
+    }
+  ],
+  "configuration": {
+    "mcpServer": {
+      "command": "python",
+      "args": ["-m", "ww.mcp.server"],
+      "env": {
+        "WW_SESSION_ID": "${CLAUDE_SESSION_ID:-default}",
+        "NEO4J_URI": "${NEO4J_URI:-bolt://localhost:7687}",
+        "NEO4J_USER": "${NEO4J_USER:-neo4j}",
+        "NEO4J_PASSWORD": "${NEO4J_PASSWORD}",
+        "QDRANT_HOST": "${QDRANT_HOST:-localhost}",
+        "QDRANT_PORT": "${QDRANT_PORT:-6333}"
+      }
+    },
+    "sessionStart": {
+      "maxEpisodes": 10,
+      "maxEntities": 15,
+      "maxSkills": 5,
+      "lookbackDays": 7
+    },
+    "sessionEnd": {
+      "autoStore": true,
+      "extractEntities": true,
+      "triggerConsolidation": false
+    },
+    "audit": {
+      "outputPath": "/home/aaron/mem/",
+      "defaultScope": "all",
+      "parallelAgents": true
+    },
+    "visualization": {
+      "defaultFormat": "mermaid",
+      "maxNodes": 50,
+      "minWeight": 0.3
+    }
+  },
+  "integrations": [
+    {
+      "name": "kymera-voice",
+      "path": "integrations/kymera-voice",
+      "description": "Voice-to-memory integration for Kymera Voice assistant",
+      "requires": ["kymera-voice"],
+      "provides": ["JarvisMemoryHook", "VoiceMemoryBridge"]
+    }
+  ],
+  "agentCategories": {
+    "core": ["ww-memory", "ww-retriever", "ww-synthesizer", "ww-orchestrator"],
+    "bugHunting": ["ww-bio-auditor", "ww-race-hunter", "ww-leak-hunter", "ww-hinton-validator", "ww-cache-analyzer", "ww-trace-debugger"],
+    "analysis": ["ww-bio-auditor", "ww-hinton-validator"],
+    "concurrency": ["ww-race-hunter", "ww-leak-hunter"],
+    "performance": ["ww-leak-hunter", "ww-cache-analyzer"],
+    "learning": ["ww-bio-auditor", "ww-hinton-validator", "ww-trace-debugger"]
+  },
+  "workflows": {
+    "fullAudit": {
+      "description": "Complete system audit with all bug hunters",
+      "agents": ["ww-bio-auditor", "ww-race-hunter", "ww-leak-hunter", "ww-hinton-validator", "ww-cache-analyzer", "ww-trace-debugger"],
+      "parallel": true
+    },
+    "learningAudit": {
+      "description": "Audit learning systems",
+      "agents": ["ww-bio-auditor", "ww-hinton-validator", "ww-trace-debugger"],
+      "parallel": true
+    },
+    "concurrencyAudit": {
+      "description": "Audit concurrent code",
+      "agents": ["ww-race-hunter", "ww-cache-analyzer"],
+      "parallel": true
+    },
+    "performanceAudit": {
+      "description": "Audit performance issues",
+      "agents": ["ww-leak-hunter", "ww-cache-analyzer"],
+      "parallel": true
+    }
+  }
+}
